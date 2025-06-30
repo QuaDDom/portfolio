@@ -1,0 +1,46 @@
+{
+  "name": "jadom-portfolio",
+  "version": "1.0.0",
+  "description": "Personal portfolio of Mateo Quadrelli, a Full-Stack Developer.",
+  "main": "src/app/page.tsx",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "portfolio",
+    "full-stack",
+    "developer",
+    "nextjs",
+    "typescript",
+    "tailwindcss"
+  ],
+  "author": "Mateo Quadrelli",
+  "license": "MIT",
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@tailwindcss/postcss": "^4.1.11",
+    "framer-motion": "^12.19.2",
+    "gsap": "^3.13.0",
+    "i18next": "^25.2.1",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-i18next": "^15.5.3",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.0.7",
+    "@types/react": "19.1.8",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.30.0",
+    "eslint-config-next": "^15.3.4",
+    "postcss": "^8.5.6",
+    "sass": "^1.89.2",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3"
+  }
+}
