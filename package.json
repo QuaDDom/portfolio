@@ -22,13 +22,14 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/postcss": "^4.1.11",
+    "critters": "^0.0.24",
     "framer-motion": "^12.19.2",
     "gsap": "^3.13.0",
     "i18next": "^25.2.1",
     "i18next-browser-languagedetector": "^8.2.0",
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^15.5.3",
     "react-icons": "^5.5.0"
   },

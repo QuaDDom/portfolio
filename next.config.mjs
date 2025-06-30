@@ -3,8 +3,16 @@ const nextConfig = {
   // Disable telemetry
   telemetry: false,
 
-  // Disable experimental features that cause issues
-  experimental: {},
+  // Explicitly disable all experimental features
+  experimental: {
+    optimizeCss: false,
+    serverComponentsExternalPackages: [],
+  },
+
+  // Force disable CSS minification that requires critters
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
 
   // Standard configuration
   poweredByHeader: false,
@@ -20,11 +28,18 @@ const nextConfig = {
     ],
   },
 
-  // Disable problematic optimizations
-  swcMinify: true,
-
   // Webpack configuration
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
+    // Disable CSS optimization in production
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        minimizer: config.optimization.minimizer?.filter((plugin) => {
+          return !plugin.constructor.name?.includes("OptimizeCss");
+        }),
+      };
+    }
+
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
