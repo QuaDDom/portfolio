@@ -4,8 +4,8 @@
   "description": "Personal portfolio of Mateo Quadrelli, a Full-Stack Developer.",
   "main": "src/app/page.tsx",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "NEXT_TELEMETRY_DISABLED=1 next dev",
+    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
     "lint": "eslint ."
   },
