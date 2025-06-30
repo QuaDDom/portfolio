@@ -3,10 +3,10 @@ const nextConfig = {
   // Disable telemetry
   telemetry: false,
 
-  // Remove experimental optimizeCss - this is causing the critters error
-  // experimental: {
-  //   optimizeCss: true,
-  // },
+  // Explicitly disable experimental optimizeCss
+  experimental: {
+    optimizeCss: false,
+  },
 
   // Image optimization
   images: {
@@ -16,10 +16,12 @@ const nextConfig = {
         hostname: "**",
       },
     ],
+    unoptimized: true,
   },
 
-  // Output configuration for better static generation
-  output: "standalone",
+  // Change output mode to export for static generation
+  output: "export",
+  trailingSlash: true,
 
   // Disable x-powered-by header
   poweredByHeader: false,

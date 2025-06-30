@@ -5,9 +5,10 @@
   "main": "src/app/page.tsx",
   "scripts": {
     "dev": "NEXT_TELEMETRY_DISABLED=1 next dev",
-    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
+    "build": "NEXT_TELEMETRY_DISABLED=1 NEXT_OPTIMIZE_CSS=false next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "export": "NEXT_TELEMETRY_DISABLED=1 next build && next export"
   },
   "keywords": [
     "portfolio",
