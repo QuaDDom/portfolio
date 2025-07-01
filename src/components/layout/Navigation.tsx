@@ -136,35 +136,33 @@ const Navigation: React.FC = () => {
     const handleClickOutside = (event: Event) => {
       const target = event.target as Node;
 
-      // Check if click is outside nav but allow clicks inside dropdowns
-      if (navRef.current && !navRef.current.contains(target)) {
-        setIsOpen(false);
-        setLanguageOpen(false);
-        setMobileLanguageOpen(false);
-        return;
-      }
-
-      // Handle desktop language dropdown separately
+      // Handle desktop language dropdown
       if (
         languageDropdownRef.current &&
-        !languageDropdownRef.current.contains(target) &&
-        !navRef.current?.contains(target)
+        !languageDropdownRef.current.contains(target)
       ) {
         setLanguageOpen(false);
       }
 
-      // Don't close mobile language dropdown if clicking inside mobile menu
-      // Only close if clicking completely outside the mobile menu
+      // Handle mobile language dropdown
       if (
         mobileLanguageDropdownRef.current &&
         !mobileLanguageDropdownRef.current.contains(target)
       ) {
-        // Check if we're clicking inside the mobile menu but outside the language dropdown
-        const mobileMenu = document.getElementById("mobile-menu");
-        if (mobileMenu && mobileMenu.contains(target)) {
-          // Click is inside mobile menu but outside language dropdown - close language dropdown
-          setMobileLanguageOpen(false);
-        }
+        setMobileLanguageOpen(false);
+      }
+
+      // Handle mobile menu - close if clicking outside nav or mobile menu
+      const mobileMenu = document.getElementById("mobile-menu");
+      const isClickOutsideNav =
+        navRef.current && !navRef.current.contains(target);
+      const isClickOutsideMobileMenu =
+        mobileMenu && !mobileMenu.contains(target);
+
+      if (isClickOutsideNav && isClickOutsideMobileMenu) {
+        setIsOpen(false);
+        setLanguageOpen(false);
+        setMobileLanguageOpen(false);
       }
     };
 
@@ -339,6 +337,7 @@ const Navigation: React.FC = () => {
 
   const handleMobileMenuToggle = useCallback(() => {
     setIsOpen((prev) => !prev);
+    // Close language dropdown when toggling menu
     setMobileLanguageOpen(false);
   }, []);
 
@@ -461,7 +460,8 @@ const Navigation: React.FC = () => {
               </div>
 
               <div className="flex items-center space-x-2">
-                <motion.button
+                {/* Theme toggle commented out temporarily */}
+                {/* <motion.button
                   onClick={handleThemeToggle}
                   whileHover={{ scale: 1.05, y: -1 }}
                   whileTap={{ scale: 0.95 }}
@@ -485,7 +485,7 @@ const Navigation: React.FC = () => {
                       <HiSun className="w-4 h-4" aria-hidden="true" />
                     )}
                   </motion.div>
-                </motion.button>
+                </motion.button> */}
 
                 <div
                   className="relative hidden sm:block"
@@ -557,11 +557,81 @@ const Navigation: React.FC = () => {
                   </AnimatePresence>
                 </div>
 
+                {/* Mobile language dropdown */}
+                <div
+                  className="relative sm:hidden"
+                  ref={mobileLanguageDropdownRef}
+                >
+                  <motion.button
+                    onClick={handleMobileLanguageToggle}
+                    whileHover={{ scale: 1.05, y: -1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-10 h-10 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
+                    aria-label="Select language"
+                    aria-expanded={mobileLanguageOpen}
+                    aria-haspopup="true"
+                  >
+                    <span className="text-lg leading-none" aria-hidden="true">
+                      {currentLanguage?.flag || "🇺🇸"}
+                    </span>
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {mobileLanguageOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                        className="absolute right-0 top-full mt-2 w-28 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl py-1 z-50"
+                        role="menu"
+                        aria-orientation="vertical"
+                      >
+                        {languages.map((lang) => (
+                          <motion.button
+                            key={lang.code}
+                            whileHover={{
+                              backgroundColor: "rgba(156, 163, 175, 0.1)",
+                            }}
+                            onClick={() => handleLanguageSelect(lang)}
+                            className={`w-full px-2 py-1.5 text-left transition-colors duration-200 flex items-center space-x-1.5 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 ${
+                              currentLanguage?.code === lang.code
+                                ? "text-blue-600 dark:text-blue-400"
+                                : "text-gray-700 dark:text-gray-300"
+                            }`}
+                            role="menuitem"
+                            aria-current={
+                              currentLanguage?.code === lang.code
+                                ? "true"
+                                : undefined
+                            }
+                          >
+                            <span
+                              className="text-sm leading-none"
+                              aria-hidden="true"
+                            >
+                              {lang.flag}
+                            </span>
+                            <span className="text-xs font-medium truncate flex-1">
+                              {lang.name}
+                            </span>
+                            {currentLanguage?.code === lang.code && (
+                              <span className="text-blue-600 dark:text-blue-400 text-xs leading-none">
+                                ✓
+                              </span>
+                            )}
+                          </motion.button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
                 <motion.button
                   onClick={handleMobileMenuToggle}
                   whileHover={{ scale: 1.05, y: -1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="lg:hidden p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="lg:hidden w-10 h-10 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
                   aria-label={isOpen ? "Close menu" : "Open menu"}
                   aria-expanded={isOpen}
                   aria-controls="mobile-menu"
@@ -641,109 +711,6 @@ const Navigation: React.FC = () => {
                   );
                 })}
               </div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700 space-y-4"
-              >
-                <motion.button
-                  onClick={handleThemeToggle}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  aria-label={`Switch to ${
-                    theme === "light" ? "dark" : "light"
-                  } mode`}
-                >
-                  {theme === "light" ? (
-                    <HiMoon className="w-5 h-5" aria-hidden="true" />
-                  ) : (
-                    <HiSun className="w-5 h-5" aria-hidden="true" />
-                  )}
-                  <span className="font-medium">
-                    {theme === "light"
-                      ? t("theme.dark") || "Dark Mode"
-                      : t("theme.light") || "Light Mode"}
-                  </span>
-                </motion.button>
-
-                <div className="relative" ref={mobileLanguageDropdownRef}>
-                  <motion.button
-                    onClick={handleMobileLanguageToggle}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    aria-label="Select language"
-                    aria-expanded={mobileLanguageOpen}
-                    aria-haspopup="true"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <HiGlobeAlt className="w-5 h-5" aria-hidden="true" />
-                      <span className="font-medium">
-                        {currentLanguage?.name || "English"}
-                      </span>
-                    </div>
-                    <motion.div
-                      animate={
-                        shouldReduceMotion
-                          ? {}
-                          : { rotate: mobileLanguageOpen ? 180 : 0 }
-                      }
-                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                    >
-                      <HiChevronDown className="w-4 h-4" aria-hidden="true" />
-                    </motion.div>
-                  </motion.button>
-
-                  <AnimatePresence>
-                    {mobileLanguageOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                        className="mt-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl py-2 z-50"
-                        role="menu"
-                        aria-orientation="vertical"
-                        onClick={(e: any) => e.stopPropagation()}
-                      >
-                        {languages.map((lang) => (
-                          <motion.button
-                            key={lang.code}
-                            whileHover={{
-                              backgroundColor: "rgba(156, 163, 175, 0.1)",
-                            }}
-                            onClick={(e: any) => handleLanguageSelect(lang, e)}
-                            className={`w-full px-4 py-3 text-left transition-colors duration-200 flex items-center space-x-3 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 ${
-                              currentLanguage?.code === lang.code
-                                ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                                : "text-gray-700 dark:text-gray-300"
-                            }`}
-                            role="menuitem"
-                            aria-current={
-                              currentLanguage?.code === lang.code
-                                ? "true"
-                                : undefined
-                            }
-                          >
-                            <span className="text-lg" aria-hidden="true">
-                              {lang.flag}
-                            </span>
-                            <span className="font-medium">{lang.name}</span>
-                            {currentLanguage?.code === lang.code && (
-                              <span className="ml-auto text-blue-600 dark:text-blue-400">
-                                ✓
-                              </span>
-                            )}
-                          </motion.button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
             </div>
           </motion.div>
         )}
