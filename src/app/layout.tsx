@@ -71,14 +71,14 @@ export const metadata = {
       "🚀 Portfolio profesional de Mateo Quadrelli - Desarrollador Full Stack con +3 años de experiencia. Especialista en React, Next.js, Node.js y UX/UI Design. Proyectos reales y testimonios de clientes.",
     images: [
       {
-        url: "https://mateoquadrelli.com/og-image-2025.jpg",
+        url: "https://mateoquadrelli.com/og-image-2025.png",
         width: 1200,
         height: 630,
         alt: "Mateo Quadrelli - Full Stack Developer Portfolio 2025",
         type: "image/jpeg",
       },
       {
-        url: "https://mateoquadrelli.com/og-image-square.jpg",
+        url: "https://mateoquadrelli.com/og-image-2025.png",
         width: 1200,
         height: 1200,
         alt: "Mateo Quadrelli - Developer Profile",
