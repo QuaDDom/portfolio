@@ -63,7 +63,7 @@ const Page = () => {
         <Hero />
         <About />
         <Skills />
-        <Projects />
+        {/* <Projects /> */}
         <Services />
         <Contact />
 
