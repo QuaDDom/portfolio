@@ -6,11 +6,13 @@ import React, {
   ReactNode,
   useEffect,
   useState,
+  useCallback,
 } from "react";
 
 interface ThemeContextType {
   theme: "light" | "dark";
   toggleTheme: () => void;
+  mounted: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -18,58 +20,72 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
+  const applyTheme = useCallback((newTheme: "light" | "dark") => {
+    const root = document.documentElement;
 
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark";
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setTheme(prefersDark ? "dark" : "light");
+    // Remove existing theme classes
+    root.classList.remove("dark", "light");
+
+    // Apply new theme
+    root.classList.add(newTheme);
+    root.setAttribute("data-theme", newTheme);
+    root.style.colorScheme = newTheme;
+
+    // Store in localStorage
+    try {
+      localStorage.setItem("theme", newTheme);
+    } catch (error) {
+      console.warn("Could not save theme to localStorage:", error);
     }
   }, []);
 
+  // Initialize theme on mount
   useEffect(() => {
-    if (!mounted) return;
+    // Get the current theme from the DOM (set by the initialization script)
+    const currentThemeClass = document.documentElement.classList.contains(
+      "dark"
+    )
+      ? "dark"
+      : "light";
 
-    // Aplicar el tema al elemento HTML
-    const root = document.documentElement;
+    let savedTheme: "light" | "dark" | null = null;
 
-    // Forzar la aplicación del tema
-    root.classList.remove("dark", "light");
-
-    if (theme === "dark") {
-      root.classList.add("dark");
-      root.setAttribute("data-theme", "dark");
-      root.style.colorScheme = "dark";
-    } else {
-      root.classList.add("light");
-      root.setAttribute("data-theme", "light");
-      root.style.colorScheme = "light";
+    try {
+      savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    } catch (error) {
+      console.warn("Could not access localStorage:", error);
     }
 
-    localStorage.setItem("theme", theme);
+    // Use the current DOM state or fallback to saved theme or system preference
+    const initialTheme =
+      currentThemeClass ||
+      savedTheme ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
 
-    // Debug: log para verificar que se está aplicando
-    console.log("Theme applied:", theme, "Classes:", root.classList.toString());
-  }, [theme, mounted]);
+    setTheme(initialTheme);
 
-  const toggleTheme = () => {
-    console.log("Toggle theme called, current:", theme);
-    setTheme((prevTheme) => {
-      const newTheme = prevTheme === "light" ? "dark" : "light";
-      console.log("New theme:", newTheme);
-      return newTheme;
-    });
-  };
+    // Only apply if different from current DOM state
+    if (initialTheme !== currentThemeClass) {
+      applyTheme(initialTheme);
+    }
 
-  const value = { theme, toggleTheme };
+    setMounted(true);
+  }, [applyTheme]);
+
+  const toggleTheme = useCallback(() => {
+    if (!mounted) return;
+
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    applyTheme(newTheme);
+  }, [theme, mounted, applyTheme]);
+
+  const value = { theme, toggleTheme, mounted };
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

@@ -4,6 +4,8 @@ import Footer from "../components/layout/Footer";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { LanguageProvider } from "../contexts/LanguageContext";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title: "Mateo Quadrelli - Full Stack Developer | Desarrollador Web Argentina",
@@ -210,33 +212,36 @@ export default function RootLayout({
         <meta property="fb:app_id" content="your-facebook-app-id" />
         <meta name="twitter:site" content="@mateoquadrelli" />
         <meta name="linkedin:owner" content="mateoquadrelli" />
-
-        <script
+      </head>
+      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+        {/* Simplified theme initialization script */}
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
-                  const theme = localStorage.getItem('theme');
-                  const root = document.documentElement;
+                  let theme = localStorage.getItem('theme');
                   
-                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    root.classList.add('dark');
-                    root.setAttribute('data-theme', 'dark');
-                    root.style.colorScheme = 'dark';
-                  } else {
-                    root.classList.remove('dark');
-                    root.setAttribute('data-theme', 'light'); 
-                    root.style.colorScheme = 'light';
+                  if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    localStorage.setItem('theme', theme);
                   }
+                  
+                  document.documentElement.classList.add(theme);
+                  document.documentElement.setAttribute('data-theme', theme);
+                  document.documentElement.style.colorScheme = theme;
                 } catch (e) {
-                  console.error('Theme initialization error:', e);
+                  document.documentElement.classList.add('light');
+                  document.documentElement.setAttribute('data-theme', 'light');
+                  document.documentElement.style.colorScheme = 'light';
                 }
               })();
             `,
           }}
         />
-      </head>
-      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
+
         <ThemeProvider>
           <LanguageProvider>
             <div className="min-h-screen">
@@ -244,6 +249,7 @@ export default function RootLayout({
               <Footer />
             </div>
             <Analytics />
+            <SpeedInsights />
           </LanguageProvider>
         </ThemeProvider>
       </body>

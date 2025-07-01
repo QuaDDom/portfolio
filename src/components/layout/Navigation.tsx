@@ -31,7 +31,7 @@ const Navigation: React.FC = () => {
   const navRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
   const { currentLanguage, setLanguage, t } = useLanguage();
   const { scrollY } = useScroll();
 
@@ -118,6 +118,50 @@ const Navigation: React.FC = () => {
     setLanguage(lang);
     setLanguageOpen(false);
   };
+
+  // Debug logging
+  useEffect(() => {
+    if (mounted) {
+      console.log("Navigation mounted, current theme:", theme);
+    }
+  }, [mounted, theme]);
+
+  const handleThemeToggle = () => {
+    console.log("Theme toggle clicked, current theme:", theme);
+    toggleTheme();
+  };
+
+  // Don't render theme-dependent content until mounted
+  if (!mounted) {
+    return (
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.6, -0.05, 0.01, 0.99] }}
+        className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 w-[93%] max-w-5xl`}
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        <div className="relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border border-gray-200/30 dark:border-gray-700/30 shadow-lg">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-14 sm:h-16">
+              {/* Logo */}
+              <div className="flex items-center">
+                <div className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400 pr-4">
+                  Mateo
+                </div>
+              </div>
+              {/* Skeleton for theme toggle */}
+              <div className="flex items-center space-x-2">
+                <div className="p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 w-10 h-10 animate-pulse" />
+                <div className="lg:hidden p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 w-10 h-10 animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.nav>
+    );
+  }
 
   return (
     <>
@@ -213,7 +257,7 @@ const Navigation: React.FC = () => {
               <div className="flex items-center space-x-2">
                 {/* Theme Toggle */}
                 <motion.button
-                  onClick={toggleTheme}
+                  onClick={handleThemeToggle}
                   whileHover={{ scale: 1.05, y: -1 }}
                   whileTap={{ scale: 0.95 }}
                   className="p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -399,7 +443,7 @@ const Navigation: React.FC = () => {
                 className="flex items-center justify-between pt-6 mt-6 border-t border-gray-200 dark:border-gray-700"
               >
                 <motion.button
-                  onClick={toggleTheme}
+                  onClick={handleThemeToggle}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

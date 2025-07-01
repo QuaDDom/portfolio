@@ -1,32 +1,31 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
-import { HiSun, HiMoon } from "react-icons/hi";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const ThemeToggle: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
+
+  // Return skeleton during SSR/hydration
+  if (!mounted) {
+    return (
+      <div className="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 w-10 h-10 animate-pulse" />
+    );
+  }
 
   return (
-    <motion.button
+    <button
       onClick={toggleTheme}
-      className="p-3 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-all duration-200"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      className="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#60A5FA]"
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
     >
-      <motion.div
-        animate={{ rotate: theme === "dark" ? 180 : 0 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        {theme === "light" ? (
-          <HiMoon className="w-5 h-5" />
-        ) : (
-          <HiSun className="w-5 h-5" />
-        )}
-      </motion.div>
-    </motion.button>
+      {theme === "dark" ? (
+        <FaSun className="h-5 w-5" />
+      ) : (
+        <FaMoon className="h-5 w-5" />
+      )}
+    </button>
   );
 };
 

@@ -12,6 +12,7 @@ interface LanguageContextType {
   currentLanguage: Language;
   setLanguage: (language: Language) => void;
   t: (key: string) => string;
+  mounted: boolean;
 }
 
 const languages: Language[] = [
@@ -705,6 +706,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setLanguage = (language: Language) => {
+    if (!mounted) return;
+
     setCurrentLanguage(language);
     localStorage.setItem("language", language.code);
   };
@@ -714,18 +717,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return translation || key;
   };
 
-  if (!mounted) {
-    return <div className="opacity-0">{children}</div>;
-  }
+  const value = {
+    currentLanguage,
+    setLanguage,
+    t,
+    mounted,
+  };
 
   return (
-    <LanguageContext.Provider
-      value={{
-        currentLanguage,
-        setLanguage,
-        t,
-      }}
-    >
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

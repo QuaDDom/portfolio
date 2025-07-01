@@ -24,6 +24,7 @@
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "critters": "^0.0.24",
     "framer-motion": "^12.19.2",
     "gsap": "^3.13.0",
