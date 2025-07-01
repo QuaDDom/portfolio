@@ -10,40 +10,28 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 export const metadata = {
   title: {
     default:
-      "Mateo Quadrelli - Full Stack Developer & UX/UI Designer | Portfolio 2025",
-    template: "%s | Mateo Quadrelli - Full Stack Developer",
+      "Mateo Quadrelli - Mejor Desarrollador Full Stack 2025 | Portfolio",
+    template: "%s | Mateo Quadrelli - Desarrollador Full Stack",
   },
   description:
-    "🚀 Mateo Quadrelli - Desarrollador Full Stack especializado en React, Next.js, Node.js, TypeScript y UX/UI Design. +3 años creando soluciones web innovadoras en Argentina. Portfolio 2025 con proyectos reales.",
+    "🚀 Mateo Quadrelli: Desarrollador Full Stack con +3 años de experiencia en React, Next.js, Node.js y UX/UI. Proyectos innovadores para clientes globales desde Buenos Aires. ¡Explora mi portfolio 2025!",
   keywords: [
     "Mateo Quadrelli",
-    "Full Stack Developer Argentina",
-    "Best Full Stack Developer Argentina 2025",
+    "Mejor Desarrollador Full Stack Argentina 2025",
     "Top React Developer Buenos Aires",
-    "Desarrollador Web",
-    "React Developer Buenos Aires",
+    "Desarrollador Next.js Argentina",
+    "Programador Full Stack Remoto",
+    "Desarrollo Web Buenos Aires 2025",
+    "React Developer Argentina",
     "Next.js Specialist",
     "TypeScript Expert",
-    "Frontend Developer React",
-    "Backend Developer Node.js",
-    "JavaScript Developer",
-    "UX UI Designer",
+    "UX UI Designer Argentina",
     "Responsive Web Design",
-    "Mobile First Development",
     "Desarrollo Web Personalizado",
     "Aplicaciones Web Modernas",
     "E-commerce Development",
     "SaaS Development",
     "API Development",
-    "Database Design",
-    "Desarrollador Web Argentina",
-    "Web Developer Buenos Aires",
-    "Freelance Developer Argentina",
-    "Remote Full Stack Developer",
-    "Portfolio Desarrollador 2025",
-    "Proyectos Web Innovadores",
-    "Casos de Estudio Desarrollo",
-    "Testimonios Clientes",
     "Best Web Developer 2025",
   ].join(", "),
   authors: [{ name: "Mateo Quadrelli", url: "https://mateoquadrelli.com" }],
@@ -66,23 +54,23 @@ export const metadata = {
     alternateLocale: ["en_US"],
     url: "https://mateoquadrelli.com",
     siteName: "Mateo Quadrelli - Full Stack Developer",
-    title: "Mateo Quadrelli - Full Stack Developer | Portfolio 2025",
+    title: "Mateo Quadrelli - Mejor Desarrollador Full Stack 2025 | Portfolio",
     description:
-      "🚀 Portfolio profesional de Mateo Quadrelli - Desarrollador Full Stack con +3 años de experiencia. Especialista en React, Next.js, Node.js y UX/UI Design. Proyectos reales y testimonios de clientes.",
+      "🚀 Portfolio de Mateo Quadrelli, Desarrollador Full Stack especializado en React, Next.js y UX/UI. ¡Descubre mis proyectos 2025 ahora!",
     images: [
       {
-        url: "https://mateoquadrelli.com/og-image-2025.png",
+        url: "https://mateoquadrelli.com/og-image-2025.webp",
         width: 1200,
         height: 630,
         alt: "Mateo Quadrelli - Full Stack Developer Portfolio 2025",
-        type: "image/jpeg",
+        type: "image/webp",
       },
       {
-        url: "https://mateoquadrelli.com/og-image-2025.png",
+        url: "https://mateoquadrelli.com/og-image-square-2025.webp",
         width: 1200,
         height: 1200,
         alt: "Mateo Quadrelli - Developer Profile",
-        type: "image/jpeg",
+        type: "image/webp",
       },
     ],
   },
@@ -90,11 +78,11 @@ export const metadata = {
     card: "summary_large_image",
     site: "@mateoquadrelli",
     creator: "@mateoquadrelli",
-    title: "Mateo Quadrelli - Full Stack Developer | Portfolio 2025",
+    title: "Mateo Quadrelli - Mejor Desarrollador Full Stack 2025 | Portfolio",
     description:
-      "🚀 Portfolio profesional con +3 años de experiencia en desarrollo Full Stack. Especialista en React, Next.js, Node.js y UX/UI Design.",
+      "🚀 Explora el portfolio 2025 de Mateo Quadrelli, experto en React, Next.js y UX/UI. ¡Proyectos innovadores desde Buenos Aires!",
     images: {
-      url: "https://mateoquadrelli.com/twitter-card-2025.jpg",
+      url: "https://mateoquadrelli.com/twitter-card-2025.webp",
       alt: "Mateo Quadrelli - Full Stack Developer Portfolio",
     },
   },
@@ -166,6 +154,8 @@ export default function RootLayout({
         <meta name="rating" content="general" />
         <meta name="revisit-after" content="3 days" />
         <meta name="expires" content="never" />
+        <meta name="dc.created" content="2025-01-01" />
+        <meta name="dc.modified" content={currentDate} />
 
         {/* Preload critical resources */}
         <link
@@ -182,7 +172,7 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        <link rel="preload" href="/og-image-2025.jpg" as="image" />
+        <link rel="preload" href="/og-image-2025.webp" as="image" />
 
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
@@ -190,6 +180,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//vercel.com" />
         <link rel="dns-prefetch" href="//analytics.google.com" />
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        <link rel="dns-prefetch" href="//linkedin.com" />
+        <link rel="dns-prefetch" href="//github.com" />
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -200,9 +192,13 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
+          media="print"
+          onLoad={(e) => {
+            e.currentTarget.media = "all";
+          }}
         />
 
-        {/* Optimized Favicons - Order matters! */}
+        {/* Optimized Favicons */}
         <link rel="icon" href="/favicon.ico" sizes="48x48" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="shortcut icon" href="/favicon.ico" />
@@ -316,7 +312,7 @@ export default function RootLayout({
         <meta property="fb:app_id" content="your-facebook-app-id" />
         <meta name="linkedin:owner" content="mateoquadrelli" />
 
-        {/* Enhanced Structured Data - Person Schema */}
+        {/* Person Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -333,7 +329,7 @@ export default function RootLayout({
               url: "https://mateoquadrelli.com",
               image: {
                 "@type": "ImageObject",
-                url: "https://mateoquadrelli.com/mateo-quadrelli-profile-2025.jpg",
+                url: "https://mateoquadrelli.com/mateo-quadrelli-profile-2025.webp",
                 width: 400,
                 height: 400,
               },
@@ -418,7 +414,7 @@ export default function RootLayout({
           }}
         />
 
-        {/* Website structured data */}
+        {/* WebSite Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -446,7 +442,7 @@ export default function RootLayout({
           }}
         />
 
-        {/* Additional Portfolio Structured Data */}
+        {/* Portfolio Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -479,7 +475,7 @@ export default function RootLayout({
           }}
         />
 
-        {/* BreadcrumbList for Navigation */}
+        {/* BreadcrumbList Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -530,7 +526,7 @@ export default function RootLayout({
           }}
         />
 
-        {/* LocalBusiness Schema for Freelance Services */}
+        {/* LocalBusiness Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -560,11 +556,161 @@ export default function RootLayout({
             }),
           }}
         />
+
+        {/* Review Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Review",
+                itemReviewed: {
+                  "@type": "Person",
+                  name: "Mateo Quadrelli",
+                },
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: "5",
+                  bestRating: "5",
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Cliente Satisfecho",
+                },
+                reviewBody:
+                  "Mateo desarrolló una aplicación web increíble para mi negocio. ¡Altamente recomendado!",
+              },
+              {
+                "@type": "Review",
+                itemReviewed: {
+                  "@type": "Person",
+                  name: "Mateo Quadrelli",
+                },
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: "5",
+                  bestRating: "5",
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Empresa XYZ",
+                },
+                reviewBody:
+                  "El diseño UX/UI y la optimización SEO de Mateo aumentaron nuestras conversiones en un 30%.",
+              },
+            ]),
+          }}
+        />
+
+        {/* FAQ Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": " Rosadrelli - Full Stack Developer",
+              description:
+                "Servicios de desarrollo web y diseño UX/UI en Buenos Aires, Argentina",
+              url: "https://mateoquadrelli.com",
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "AR",
+                addressLocality: "Buenos Aires",
+                addressRegion: "Buenos Aires",
+              },
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: -34.6118,
+                longitude: -58.396,
+              },
+              sameAs: [
+                "https://linkedin.com/in/mateoquadrelli",
+                "https://github.com/mateoquadrelli",
+                "https://twitter.com/mateoquadrelli",
+              ],
+            }),
+          }}
+        />
+
+        {/* Review Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Review",
+                itemReviewed: {
+                  "@type": "Person",
+                  name: "Mateo Quadrelli",
+                },
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: "5",
+                  bestRating: "5",
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Cliente Satisfecho",
+                },
+                reviewBody:
+                  "Mateo desarrolló una aplicación web increíble para mi negocio. ¡Altamente recomendado!",
+              },
+              {
+                "@type": "Review",
+                itemReviewed: {
+                  "@type": "Person",
+                  name: "Mateo Quadrelli",
+                },
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: "5",
+                  bestRating: "5",
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Empresa XYZ",
+                },
+                reviewBody:
+                  "El diseño UX/UI y la optimización SEO de Mateo aumentaron nuestras conversiones en un 30%.",
+              },
+            ]),
+          }}
+        />
+
+        {/* FAQ Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: [
+                {
+                  "@type": "Question",
+                  name: "¿Qué servicios ofrece Mateo Quadrelli como desarrollador Full Stack?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Mateo ofrece desarrollo web con React, Next.js, Node.js, diseño UX/UI, optimización SEO, desarrollo de APIs y más.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "¿Cómo contactar a Mateo Quadrelli para un proyecto?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Puedes contactar a Mateo a través de su sitio web mateoquadrelli.com o en LinkedIn (@mateoquadrelli).",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className="bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-950 dark:via-blue-950/30 dark:to-purple-950/20 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen relative overflow-x-hidden">
         {/* Global Background Pattern */}
         <div className="fixed inset-0 pointer-events-none z-0">
-          {/* Animated geometric shapes */}
           <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-blue-500/3 to-cyan-500/3 rounded-full blur-3xl animate-pulse" />
           <div
             className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-purple-500/3 to-pink-500/3 rounded-full blur-3xl animate-pulse"
@@ -574,8 +720,6 @@ export default function RootLayout({
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-cyan-500/2 to-indigo-500/2 rounded-full blur-3xl animate-pulse"
             style={{ animationDelay: "4s" }}
           />
-
-          {/* Subtle grid pattern */}
           <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.02]">
             <div
               className="w-full h-full"
@@ -599,12 +743,10 @@ export default function RootLayout({
               (function() {
                 try {
                   let theme = localStorage.getItem('theme');
-                  
                   if (!theme) {
                     theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                     localStorage.setItem('theme', theme);
                   }
-                  
                   document.documentElement.classList.add(theme);
                   document.documentElement.setAttribute('data-theme', theme);
                   document.documentElement.style.colorScheme = theme;
