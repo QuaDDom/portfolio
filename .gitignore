@@ -80,6 +80,9 @@ jspm_packages/
 .env.development
 .env.production
 
+# local env files
+.env*.local
+
 # Vercel
 .vercel
 

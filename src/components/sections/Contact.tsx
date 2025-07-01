@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../contexts/LanguageContext";
+import emailjs from "@emailjs/browser";
 import {
   HiMail,
   HiPhone,
@@ -15,6 +16,13 @@ import {
   HiTag,
 } from "react-icons/hi";
 import { SiGithub, SiLinkedin, SiX, SiInstagram } from "react-icons/si";
+
+// Add EmailJS configuration
+const EMAILJS_CONFIG = {
+  serviceId: process.env.EMAILJS_SERVICE_ID || "",
+  templateId: process.env.EMAILJS_TEMPLATE_ID || "",
+  publicKey: process.env.EMAILJS_PUBLIC_KEY || "",
+};
 
 interface FormData {
   name: string;
@@ -66,6 +74,14 @@ const Contact: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedServiceData, setSelectedServiceData] =
     useState<ServiceData | null>(null);
+  const [submitError, setSubmitError] = useState<string>("");
+
+  // Initialize EmailJS once when component mounts
+  useEffect(() => {
+    if (EMAILJS_CONFIG.publicKey) {
+      emailjs.init(EMAILJS_CONFIG.publicKey);
+    }
+  }, []);
 
   const contactInfo = [
     {
@@ -297,14 +313,68 @@ const Contact: React.FC = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setSubmitError("");
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Form submitted:", {
-        ...formData,
-        captchaAnswer: captchaInput,
-      });
+      // Check if EmailJS is properly configured
+      if (
+        !EMAILJS_CONFIG.serviceId ||
+        !EMAILJS_CONFIG.templateId ||
+        !EMAILJS_CONFIG.publicKey
+      ) {
+        // Fallback to mailto
+        const subject = encodeURIComponent(formData.subject);
+        const body = encodeURIComponent(
+          `Nombre: ${formData.name}\n` +
+            `Email: ${formData.email}\n` +
+            `Presupuesto: ${formData.budget}\n` +
+            `Tiempo: ${formData.timeline}\n` +
+            `Servicio: ${
+              selectedServiceData?.title || "Consulta general"
+            }\n\n` +
+            `Mensaje:\n${formData.message}`
+        );
+
+        window.location.href = `mailto:matquadev@gmail.com?subject=${subject}&body=${body}`;
+        setShowSuccess(true);
+        setIsSubmitted(true);
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+          budget: "",
+          timeline: "",
+          serviceType: "",
+        });
+        setSelectedServiceData(null);
+        setCaptchaInput("");
+        generateCaptcha();
+        return;
+      }
+
+      // Prepare email data for EmailJS
+      const emailData = {
+        from_name: formData.name,
+        from_email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        budget: formData.budget || "No especificado",
+        timeline: formData.timeline || "No especificado",
+        service_type: selectedServiceData?.title || "Consulta general",
+        service_price: selectedServiceData?.price || "N/A",
+        service_addons: selectedServiceData?.addOns.join(", ") || "Ninguno",
+        timestamp: new Date().toLocaleString("es-AR"),
+      };
+
+      // Send email via EmailJS
+      const result = await emailjs.send(
+        EMAILJS_CONFIG.serviceId,
+        EMAILJS_CONFIG.templateId,
+        emailData
+      );
+
+      console.log("Email sent successfully:", result);
 
       setShowSuccess(true);
       setIsSubmitted(true);
@@ -315,16 +385,20 @@ const Contact: React.FC = () => {
         message: "",
         budget: "",
         timeline: "",
+        serviceType: "",
       });
+      setSelectedServiceData(null);
       setCaptchaInput("");
       generateCaptcha();
 
-      // Hide success message after 5 seconds
       setTimeout(() => {
         setShowSuccess(false);
       }, 5000);
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error sending email:", error);
+      setSubmitError(
+        "Hubo un error al enviar el mensaje. Por favor, intenta nuevamente o contáctame directamente a matquadev@gmail.com"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -785,6 +859,20 @@ const Contact: React.FC = () => {
                     </>
                   )}
                 </motion.button>
+
+                {/* Error Message */}
+                {submitError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
+                  >
+                    <div className="flex items-center space-x-2 text-red-800 dark:text-red-200">
+                      <HiExclamationCircle className="w-5 h-5" />
+                      <span className="text-sm">{submitError}</span>
+                    </div>
+                  </motion.div>
+                )}
               </form>
             </motion.div>
           </div>
@@ -799,14 +887,12 @@ const Contact: React.FC = () => {
               exit={{ opacity: 0, scale: 0.8, y: 50 }}
               className="fixed bottom-8 right-8 z-50"
             >
-              <div className="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3">
-                <HiCheckCircle className="w-6 h-6" />
+              <div className="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 max-w-sm">
+                <HiCheckCircle className="w-6 h-6 flex-shrink-0" />
                 <div>
-                  <div className="font-semibold">
-                    {t("contact.success.title")}
-                  </div>
+                  <div className="font-semibold">¡Mensaje enviado!</div>
                   <div className="text-sm opacity-90">
-                    {t("contact.success.description")}
+                    Te responderé pronto a tu email
                   </div>
                 </div>
               </div>
