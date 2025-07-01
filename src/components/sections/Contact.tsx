@@ -526,48 +526,51 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-20 relative overflow-hidden">
-      {/* Consistent background with Services - seamless transition */}
+    <section
+      id="contact"
+      className="py-16 sm:py-20 lg:py-24 relative overflow-hidden"
+    >
+      {/* Background system - consistent with Services */}
       <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900" />
-
-      {/* Subtle gradient overlay matching Services style */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-50/20 via-transparent to-purple-50/20 dark:from-blue-900/10 dark:via-transparent dark:to-purple-900/10" />
 
-      {/* Minimal background decoration - consistent with Services */}
+      {/* Minimal background decoration - mobile optimized */}
       <div className="absolute inset-0 pointer-events-none opacity-40">
-        <div className="absolute top-32 left-32 w-80 h-80 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-32 right-32 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-10 sm:top-20 lg:top-32 left-10 sm:left-20 lg:left-32 w-32 sm:w-56 lg:w-80 h-32 sm:h-56 lg:h-80 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 sm:bottom-20 lg:bottom-32 right-10 sm:right-20 lg:right-32 w-40 sm:w-64 lg:w-96 h-40 sm:h-64 lg:h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-4 relative z-10">
+        {/* Header - mobile optimized */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16 lg:mb-20"
         >
-          <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
             {t("contact.title")}
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed px-2">
             {t("contact.subtitle")}
           </p>
         </motion.div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
+            {/* Contact Info - mobile optimized */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="lg:col-span-1 space-y-8"
+              className="lg:col-span-1 space-y-4 sm:space-y-6 lg:space-y-8"
             >
-              <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
-                <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-900 dark:text-white">
                   {t("contact.info.title")}
                 </h3>
 
-                <div className="space-y-6">
+                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                   {contactInfo.map((item, index) => {
                     const IconComponent = item.icon;
                     return (
@@ -578,18 +581,18 @@ const Contact: React.FC = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: index * 0.1 }}
                         whileHover={{ scale: 1.02, x: 5 }}
-                        className="flex items-center p-4 rounded-2xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-md transition-all duration-300 group"
+                        className="flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-md transition-all duration-300 group"
                       >
                         <div
-                          className={`p-3 rounded-xl bg-gradient-to-r ${item.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                          className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r ${item.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
                         >
-                          <IconComponent className="w-6 h-6 text-white" />
+                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="ml-3 sm:ml-4">
+                          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                             {t(item.labelKey)}
                           </div>
-                          <div className="font-semibold text-gray-900 dark:text-white">
+                          <div className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">
                             {item.value || t(item.valueKey || "")}
                           </div>
                         </div>
@@ -599,16 +602,17 @@ const Contact: React.FC = () => {
                 </div>
               </div>
 
+              {/* Social Links - mobile optimized */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-200 dark:border-gray-700"
+                className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-200 dark:border-gray-700"
               >
-                <h4 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">
+                <h4 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-white">
                   {t("contact.social.title")}
                 </h4>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   {socialLinks.map((social, index) => {
                     const IconComponent = social.icon;
                     return (
@@ -619,10 +623,12 @@ const Contact: React.FC = () => {
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl text-gray-600 dark:text-gray-400 ${social.color} hover:shadow-md transition-all duration-300 group`}
+                        className={`flex items-center justify-center p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl text-gray-600 dark:text-gray-400 ${social.color} hover:shadow-md transition-all duration-300 group`}
                       >
-                        <IconComponent className="w-6 h-6 mr-2" />
-                        <span className="font-medium">{social.name}</span>
+                        <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-1.5 sm:mr-2" />
+                        <span className="font-medium text-xs sm:text-sm">
+                          {social.name}
+                        </span>
                       </motion.a>
                     );
                   })}
@@ -630,37 +636,39 @@ const Contact: React.FC = () => {
               </motion.div>
             </motion.div>
 
+            {/* Form Section - mobile optimized */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-2"
             >
+              {/* Selected Service Banner - mobile optimized */}
               <AnimatePresence>
                 {selectedServiceData && (
                   <motion.div
                     initial={{ opacity: 0, y: -20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    className="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6"
+                    className="mb-4 sm:mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl sm:rounded-2xl p-4 sm:p-6"
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-blue-500 rounded-lg">
-                          <HiStar className="w-5 h-5 text-white" />
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <div className="p-1.5 sm:p-2 bg-blue-500 rounded-lg">
+                          <HiStar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
+                          <h4 className="font-semibold text-gray-900 dark:text-white text-base sm:text-lg">
                             {selectedServiceData.title ||
                               "Servicio Seleccionado"}
                           </h4>
-                          <div className="flex items-center space-x-4 mt-1">
-                            <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
-                              <HiTag className="w-4 h-4 mr-1" />
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mt-1 space-y-1 sm:space-y-0">
+                            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                              <HiTag className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                               Base: {selectedServiceData.basePrice || "N/A"}
                             </span>
-                            <span className="text-sm text-blue-600 dark:text-blue-400 flex items-center">
-                              <HiClock className="w-4 h-4 mr-1" />
+                            <span className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 flex items-center">
+                              <HiClock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                               {selectedServiceData.duration || "A definir"}
                             </span>
                           </div>
@@ -672,7 +680,7 @@ const Contact: React.FC = () => {
                         onClick={clearServiceSelection}
                         className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                       >
-                        <HiRefresh className="w-5 h-5" />
+                        <HiRefresh className="w-4 h-4 sm:w-5 sm:h-5" />
                       </motion.button>
                     </div>
 
@@ -682,10 +690,10 @@ const Contact: React.FC = () => {
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
-                          className="border-t border-blue-200 dark:border-blue-700 pt-4"
+                          className="border-t border-blue-200 dark:border-blue-700 pt-3 sm:pt-4"
                         >
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-                            <HiPlus className="w-4 h-4 mr-2 text-green-500" />
+                          <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 flex items-center">
+                            <HiPlus className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-green-500" />
                             Servicios adicionales incluidos:
                           </p>
                           <div className="space-y-2">
@@ -696,19 +704,19 @@ const Contact: React.FC = () => {
                               .map((addon, index) => (
                                 <div
                                   key={index}
-                                  className="flex items-center justify-between p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl"
+                                  className="flex items-center justify-between p-2.5 sm:p-3 bg-white/80 dark:bg-gray-800/80 rounded-lg sm:rounded-xl"
                                 >
-                                  <div>
-                                    <span className="font-medium text-gray-900 dark:text-white">
+                                  <div className="flex-1">
+                                    <span className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
                                       {addon.name}
                                     </span>
                                     {addon.description && (
-                                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
                                         {addon.description}
                                       </p>
                                     )}
                                   </div>
-                                  <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                                  <span className="text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 ml-3">
                                     {addon.price}
                                   </span>
                                 </div>
@@ -716,13 +724,13 @@ const Contact: React.FC = () => {
                           </div>
 
                           {selectedServiceData.totalPrice && (
-                            <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-700">
+                            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-700">
                               <div className="flex items-center justify-between">
-                                <span className="font-semibold text-gray-900 dark:text-white flex items-center">
-                                  <HiCalculator className="w-5 h-5 mr-2" />
-                                  Precio total estimado:
+                                <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white flex items-center">
+                                  <HiCalculator className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                                  Total estimado:
                                 </span>
-                                <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                <span className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600 dark:text-green-400">
                                   {selectedServiceData.totalPrice}
                                 </span>
                               </div>
@@ -734,11 +742,13 @@ const Contact: React.FC = () => {
                 )}
               </AnimatePresence>
 
+              {/* Form - mobile optimized */}
               <form
                 onSubmit={handleSubmit}
-                className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6"
+                className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-200 dark:border-gray-700 space-y-4 sm:space-y-6"
               >
-                <div className="grid md:grid-cols-2 gap-6">
+                {/* Name and Email - mobile optimized */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label
                       htmlFor="name"
@@ -752,7 +762,7 @@ const Contact: React.FC = () => {
                       id="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+                      className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm sm:text-base ${
                         errors.name
                           ? "border-red-500 bg-red-50 dark:bg-red-900/20"
                           : "border-gray-300 hover:border-gray-400"
@@ -784,7 +794,7 @@ const Contact: React.FC = () => {
                       id="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+                      className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm sm:text-base ${
                         errors.email
                           ? "border-red-500 bg-red-50 dark:bg-red-900/20"
                           : "border-gray-300 hover:border-gray-400"
@@ -804,7 +814,8 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                {/* Budget and Timeline - mobile optimized */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label
                       htmlFor="budget"
@@ -812,7 +823,7 @@ const Contact: React.FC = () => {
                     >
                       {t("contact.form.budget")}
                       {selectedServiceData && (
-                        <span className="text-blue-600 dark:text-blue-400 ml-2">
+                        <span className="text-blue-600 dark:text-blue-400 ml-2 text-xs sm:text-sm">
                           (Estimado: {selectedServiceData.totalPrice})
                         </span>
                       )}
@@ -822,7 +833,7 @@ const Contact: React.FC = () => {
                       id="budget"
                       value={formData.budget}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white hover:border-gray-400"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white hover:border-gray-400 text-sm sm:text-base"
                     >
                       <option value="">Selecciona un rango</option>
                       {budgetRanges.map((range) => (
@@ -840,7 +851,7 @@ const Contact: React.FC = () => {
                     >
                       {t("contact.form.timeline")}
                       {selectedServiceData && (
-                        <span className="text-blue-600 dark:text-blue-400 ml-2">
+                        <span className="text-blue-600 dark:text-blue-400 ml-2 text-xs sm:text-sm">
                           (Estimado: {selectedServiceData.duration})
                         </span>
                       )}
@@ -850,7 +861,7 @@ const Contact: React.FC = () => {
                       id="timeline"
                       value={formData.timeline}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white hover:border-gray-400"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white hover:border-gray-400 text-sm sm:text-base"
                     >
                       <option value="">Selecciona un tiempo</option>
                       {timelineOptions.map((option) => (
@@ -862,6 +873,7 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Subject - mobile optimized */}
                 <div>
                   <label
                     htmlFor="subject"
@@ -875,7 +887,7 @@ const Contact: React.FC = () => {
                     id="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm sm:text-base ${
                       errors.subject
                         ? "border-red-500 bg-red-50 dark:bg-red-900/20"
                         : "border-gray-300 hover:border-gray-400"
@@ -894,6 +906,7 @@ const Contact: React.FC = () => {
                   )}
                 </div>
 
+                {/* Message - mobile optimized */}
                 <div>
                   <label
                     htmlFor="message"
@@ -904,10 +917,10 @@ const Contact: React.FC = () => {
                   <textarea
                     name="message"
                     id="message"
-                    rows={6}
+                    rows={4}
                     value={formData.message}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white resize-none ${
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white resize-none text-sm sm:text-base ${
                       errors.message
                         ? "border-red-500 bg-red-50 dark:bg-red-900/20"
                         : "border-gray-300 hover:border-gray-400"
@@ -926,6 +939,7 @@ const Contact: React.FC = () => {
                   )}
                 </div>
 
+                {/* Captcha - mobile optimized */}
                 <div>
                   <label
                     htmlFor="captcha"
@@ -933,9 +947,9 @@ const Contact: React.FC = () => {
                   >
                     {t("contact.form.captcha")} *
                   </label>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-3 px-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl border border-gray-300 dark:border-gray-600">
-                      <span className="text-lg font-mono text-gray-900 dark:text-white">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                    <div className="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 dark:bg-gray-700 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-600 w-full sm:w-auto">
+                      <span className="text-base sm:text-lg font-mono text-gray-900 dark:text-white">
                         {captcha.question} = ?
                       </span>
                       <motion.button
@@ -945,7 +959,7 @@ const Contact: React.FC = () => {
                         whileTap={{ scale: 0.9 }}
                         className="p-1 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       >
-                        <HiRefresh className="w-5 h-5" />
+                        <HiRefresh className="w-4 h-4 sm:w-5 sm:h-5" />
                       </motion.button>
                     </div>
                     <input
@@ -957,7 +971,7 @@ const Contact: React.FC = () => {
                           setErrors({ ...errors, captcha: undefined });
                         }
                       }}
-                      className={`w-24 px-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-center ${
+                      className={`w-full sm:w-24 px-3 py-2.5 sm:py-3 border rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-center text-sm sm:text-base ${
                         errors.captcha
                           ? "border-red-500 bg-red-50 dark:bg-red-900/20"
                           : "border-gray-300 hover:border-gray-400"
@@ -977,12 +991,13 @@ const Contact: React.FC = () => {
                   )}
                 </div>
 
+                {/* Submit Button - mobile optimized */}
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full py-4 px-8 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 ${
+                  className={`w-full py-3 sm:py-4 px-6 sm:px-8 font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base lg:text-lg ${
                     selectedServiceData
                       ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white"
                       : "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
@@ -997,13 +1012,13 @@ const Contact: React.FC = () => {
                           repeat: Infinity,
                           ease: "linear",
                         }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                        className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full"
                       />
                       <span>Enviando mensaje...</span>
                     </>
                   ) : (
                     <>
-                      <HiMail className="w-5 h-5" />
+                      <HiMail className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span>
                         {selectedServiceData
                           ? `Solicitar cotización • ${selectedServiceData.totalPrice}`
@@ -1013,19 +1028,20 @@ const Contact: React.FC = () => {
                   )}
                 </motion.button>
 
+                {/* Error Message - mobile optimized */}
                 {submitError && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
+                    className="p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
                   >
                     <div className="flex items-start space-x-2 text-red-800 dark:text-red-200">
-                      <HiExclamationCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                      <HiExclamationCircle className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <div className="font-medium text-sm mb-2">
                           Error al enviar mensaje
                         </div>
-                        <div className="text-sm whitespace-pre-line leading-relaxed">
+                        <div className="text-xs sm:text-sm whitespace-pre-line leading-relaxed">
                           {submitError}
                         </div>
                         {submitError.includes("matquadev@gmail.com") && (
@@ -1033,9 +1049,9 @@ const Contact: React.FC = () => {
                             href="mailto:matquadev@gmail.com"
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="inline-flex items-center mt-3 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+                            className="inline-flex items-center mt-3 px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-red-700 transition-colors"
                           >
-                            <HiMail className="w-4 h-4 mr-2" />
+                            <HiMail className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                             Abrir correo electrónico
                           </motion.a>
                         )}
@@ -1048,19 +1064,22 @@ const Contact: React.FC = () => {
           </div>
         </div>
 
+        {/* Success Message - Fixed positioning and mobile optimized */}
         <AnimatePresence>
           {showSuccess && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 50 }}
-              className="fixed bottom-8 right-8 z-50"
+              className="fixed top-4 sm:top-6 lg:top-8 right-4 sm:right-6 lg:right-8 z-50 max-w-xs sm:max-w-sm"
             >
-              <div className="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 max-w-sm">
-                <HiCheckCircle className="w-6 h-6 flex-shrink-0" />
+              <div className="bg-green-500 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl shadow-2xl flex items-center space-x-2 sm:space-x-3">
+                <HiCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
                 <div>
-                  <div className="font-semibold">¡Mensaje enviado!</div>
-                  <div className="text-sm opacity-90">
+                  <div className="font-semibold text-sm sm:text-base">
+                    ¡Mensaje enviado!
+                  </div>
+                  <div className="text-xs sm:text-sm opacity-90">
                     Te responderé pronto a tu email
                   </div>
                 </div>

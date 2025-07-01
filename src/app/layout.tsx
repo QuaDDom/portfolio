@@ -192,10 +192,6 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
-          media="print"
-          onLoad={(e) => {
-            e.currentTarget.media = "all";
-          }}
         />
 
         {/* Optimized Favicons */}
@@ -534,82 +530,6 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               name: "Mateo Quadrelli - Full Stack Developer",
-              description:
-                "Servicios de desarrollo web y diseño UX/UI en Buenos Aires, Argentina",
-              url: "https://mateoquadrelli.com",
-              address: {
-                "@type": "PostalAddress",
-                addressCountry: "AR",
-                addressLocality: "Buenos Aires",
-                addressRegion: "Buenos Aires",
-              },
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: -34.6118,
-                longitude: -58.396,
-              },
-              sameAs: [
-                "https://linkedin.com/in/mateoquadrelli",
-                "https://github.com/mateoquadrelli",
-                "https://twitter.com/mateoquadrelli",
-              ],
-            }),
-          }}
-        />
-
-        {/* Review Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                "@context": "https://schema.org",
-                "@type": "Review",
-                itemReviewed: {
-                  "@type": "Person",
-                  name: "Mateo Quadrelli",
-                },
-                reviewRating: {
-                  "@type": "Rating",
-                  ratingValue: "5",
-                  bestRating: "5",
-                },
-                author: {
-                  "@type": "Person",
-                  name: "Cliente Satisfecho",
-                },
-                reviewBody:
-                  "Mateo desarrolló una aplicación web increíble para mi negocio. ¡Altamente recomendado!",
-              },
-              {
-                "@type": "Review",
-                itemReviewed: {
-                  "@type": "Person",
-                  name: "Mateo Quadrelli",
-                },
-                reviewRating: {
-                  "@type": "Rating",
-                  ratingValue: "5",
-                  bestRating: "5",
-                },
-                author: {
-                  "@type": "Person",
-                  name: "Empresa XYZ",
-                },
-                reviewBody:
-                  "El diseño UX/UI y la optimización SEO de Mateo aumentaron nuestras conversiones en un 30%.",
-              },
-            ]),
-          }}
-        />
-
-        {/* FAQ Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": " Rosadrelli - Full Stack Developer",
               description:
                 "Servicios de desarrollo web y diseño UX/UI en Buenos Aires, Argentina",
               url: "https://mateoquadrelli.com",
