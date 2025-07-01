@@ -123,11 +123,14 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="relative bg-gradient-to-br from-gray-900 via-blue-900/10 to-purple-900/10 text-white overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-gray-50 via-blue-50/60 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/60 dark:to-purple-900/30 text-gray-900 dark:text-white overflow-hidden transition-colors duration-300">
+      {/* Seamless transition overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-100/40 via-transparent to-transparent dark:from-gray-800/40 dark:via-transparent dark:to-transparent" />
+
       {/* Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-600/5 to-purple-600/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-600/5 to-indigo-600/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-600/8 to-purple-600/8 dark:from-blue-600/15 dark:to-purple-600/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-600/8 to-indigo-600/8 dark:from-cyan-600/15 dark:to-indigo-600/15 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10">
@@ -142,10 +145,10 @@ const Footer: React.FC = () => {
               className="lg:col-span-2 space-y-6"
             >
               <div>
-                <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-4">
                   Mateo Quadrelli
                 </h3>
-                <p className="text-gray-300 text-lg leading-relaxed max-w-md">
+                <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed max-w-md">
                   Desarrollador Full Stack especializado en crear experiencias
                   digitales excepcionales que transforman ideas en realidades
                   tecnológicas impactantes.
@@ -164,9 +167,9 @@ const Footer: React.FC = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       whileHover={{ x: 5 }}
-                      className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all duration-300 group"
+                      className="flex items-center space-x-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all duration-300 group"
                     >
-                      <div className="p-2 bg-gray-800/50 rounded-lg group-hover:bg-blue-600/20 transition-colors duration-300">
+                      <div className="p-2 bg-gray-200/50 dark:bg-gray-800/50 rounded-lg group-hover:bg-blue-600/20 transition-colors duration-300">
                         <IconComponent className="w-4 h-4" />
                       </div>
                       <span className="text-sm">{item.text}</span>
@@ -187,7 +190,7 @@ const Footer: React.FC = () => {
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     whileHover={{ scale: 1.1, y: -2 }}
-                    className={`p-3 bg-gray-800/50 rounded-xl text-gray-400 ${social.color} transition-all duration-300 hover:bg-gray-700/50`}
+                    className={`p-3 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl text-gray-600 dark:text-gray-400 ${social.color} transition-all duration-300 hover:bg-gray-300/50 dark:hover:bg-gray-700/50`}
                   >
                     {social.icon}
                     <span className="sr-only">{social.name}</span>
@@ -205,7 +208,7 @@ const Footer: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.2 + sectionIndex * 0.1 }}
                 className="space-y-4"
               >
-                <h4 className="text-lg font-semibold text-white mb-6">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
                   {section.title}
                 </h4>
                 <ul className="space-y-3">
@@ -218,7 +221,7 @@ const Footer: React.FC = () => {
                     >
                       <button
                         onClick={() => scrollToSection(link.href)}
-                        className="text-gray-400 hover:text-white transition-colors duration-300 text-sm flex items-center group"
+                        className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 text-sm flex items-center group"
                       >
                         <span className="group-hover:translate-x-1 transition-transform duration-300">
                           {link.name}
@@ -238,15 +241,15 @@ const Footer: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="border-t border-gray-800/50"
+          className="border-t border-gray-300/50 dark:border-gray-700/50"
         >
           <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0">
               <div className="text-center lg:text-left">
-                <h4 className="text-lg font-semibold text-white mb-2">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   ¿Listo para tu próximo proyecto?
                 </h4>
-                <p className="text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400">
                   Conversemos sobre cómo puedo ayudarte a alcanzar tus objetivos
                   digitales.
                 </p>
@@ -264,14 +267,14 @@ const Footer: React.FC = () => {
         </motion.div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800/50">
+        <div className="border-t border-gray-300/50 dark:border-gray-700/50">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
               <motion.p
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
-                className="text-gray-400 text-sm flex items-center"
+                className="text-gray-600 dark:text-gray-400 text-sm flex items-center"
               >
                 © {currentYear} Mateo Quadrelli. Diseñado y desarrollado con
                 <motion.span
@@ -296,18 +299,18 @@ const Footer: React.FC = () => {
                   onClick={scrollToTop}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-2 bg-gray-800/50 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700/50 transition-all duration-300"
+                  className="p-2 bg-gray-200/50 dark:bg-gray-800/50 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-300/50 dark:hover:bg-gray-700/50 transition-all duration-300"
                   aria-label="Volver arriba"
                 >
                   <HiArrowUp className="w-5 h-5" />
                 </motion.button>
 
-                <div className="flex space-x-4 text-xs text-gray-500">
-                  <button className="hover:text-gray-300 transition-colors duration-300">
+                <div className="flex space-x-4 text-xs text-gray-500 dark:text-gray-500">
+                  <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
                     Política de Privacidad
                   </button>
                   <span>•</span>
-                  <button className="hover:text-gray-300 transition-colors duration-300">
+                  <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
                     Términos de Servicio
                   </button>
                 </div>

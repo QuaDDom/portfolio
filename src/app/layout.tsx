@@ -213,7 +213,35 @@ export default function RootLayout({
         <meta name="twitter:site" content="@mateoquadrelli" />
         <meta name="linkedin:owner" content="mateoquadrelli" />
       </head>
-      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+      <body className="bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-950 dark:via-blue-950/30 dark:to-purple-950/20 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen relative overflow-x-hidden">
+        {/* Global Background Pattern */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          {/* Animated geometric shapes */}
+          <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-blue-500/3 to-cyan-500/3 rounded-full blur-3xl animate-pulse" />
+          <div
+            className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-purple-500/3 to-pink-500/3 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "2s" }}
+          />
+          <div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-cyan-500/2 to-indigo-500/2 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "4s" }}
+          />
+
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.02]">
+            <div
+              className="w-full h-full"
+              style={{
+                backgroundImage: `
+                  linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
+                `,
+                backgroundSize: "60px 60px",
+              }}
+            />
+          </div>
+        </div>
+
         {/* Simplified theme initialization script */}
         <Script
           id="theme-init"
@@ -244,7 +272,7 @@ export default function RootLayout({
 
         <ThemeProvider>
           <LanguageProvider>
-            <div className="min-h-screen">
+            <div className="min-h-screen relative z-10">
               {children}
               <Footer />
             </div>

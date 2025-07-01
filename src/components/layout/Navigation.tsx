@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   motion,
   AnimatePresence,
@@ -28,139 +34,342 @@ const Navigation: React.FC = () => {
   const [activeSection, setActiveSection] = useState("hero");
   const [isScrolled, setIsScrolled] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const [mobileLanguageOpen, setMobileLanguageOpen] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+
   const navRef = useRef<HTMLElement>(null);
+  const languageDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileLanguageDropdownRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const shouldReduceMotion = useReducedMotion();
 
   const { theme, toggleTheme, mounted } = useTheme();
   const { currentLanguage, setLanguage, t } = useLanguage();
   const { scrollY } = useScroll();
 
-  const navItems = [
-    { name: t("nav.home"), href: "#hero", icon: HiHome },
-    { name: t("nav.about"), href: "#about", icon: HiUser },
-    { name: t("nav.skills"), href: "#skills", icon: HiLightningBolt },
-    { name: t("nav.projects"), href: "#projects", icon: HiCollection },
-    { name: t("nav.services"), href: "#services", icon: HiBriefcase },
-    { name: t("nav.contact"), href: "#contact", icon: HiMail },
-  ];
+  const navItems = useMemo(
+    () => [
+      { name: t("nav.home") || "Home", href: "#hero", icon: HiHome },
+      { name: t("nav.about") || "About", href: "#about", icon: HiUser },
+      {
+        name: t("nav.skills") || "Skills",
+        href: "#skills",
+        icon: HiLightningBolt,
+      },
+      {
+        name: t("nav.projects") || "Projects",
+        href: "#projects",
+        icon: HiCollection,
+      },
+      {
+        name: t("nav.services") || "Services",
+        href: "#services",
+        icon: HiBriefcase,
+      },
+      { name: t("nav.contact") || "Contact", href: "#contact", icon: HiMail },
+    ],
+    [t]
+  );
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsScrolled(latest > 50);
-  });
-
+  // Enhanced section detection with intersection observer only
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = [
-        "hero",
-        "about",
-        "skills",
-        "projects",
-        "services",
-        "contact",
-      ];
-      const currentSection = sections.find((section) => {
+    const sections = [
+      "hero",
+      "about",
+      "skills",
+      "projects",
+      "services",
+      "contact",
+    ];
+
+    // Check if we're in the browser environment
+    if (typeof window === "undefined") return;
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+              setActiveSection(entry.target.id);
+            }
+          });
+        },
+        {
+          threshold: [0.3, 0.5, 0.7],
+          rootMargin: "-20% 0px -20% 0px",
+        }
+      );
+
+      sections.forEach((section) => {
         const element = document.getElementById(section);
         if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
+          observer.observe(element);
         }
-        return false;
       });
 
-      if (currentSection) {
-        setActiveSection(currentSection);
-      }
-    };
+      return () => observer.disconnect();
+    } else {
+      // Fallback: use a simple scroll-based detection
+      const checkActiveSection = () => {
+        const currentSection = sections.find((section) => {
+          const element = document.getElementById(section);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            return rect.top <= 100 && rect.bottom >= 100;
+          }
+          return false;
+        });
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+        if (currentSection) {
+          setActiveSection(currentSection);
+        }
+      };
 
-  // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setLanguageOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Close mobile menu on escape key
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-        setLanguageOpen(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, []);
-
-  const scrollToSection = (href: string) => {
-    const element = document.getElementById(href.substring(1));
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Initial check
+      checkActiveSection();
     }
+  }, []);
+
+  // Handle click outside using React refs only
+  useEffect(() => {
+    const handleClickOutside = (event: Event) => {
+      const target = event.target as Node;
+
+      // Check if click is outside nav but allow clicks inside dropdowns
+      if (navRef.current && !navRef.current.contains(target)) {
+        setIsOpen(false);
+        setLanguageOpen(false);
+        setMobileLanguageOpen(false);
+        return;
+      }
+
+      // Handle desktop language dropdown separately
+      if (
+        languageDropdownRef.current &&
+        !languageDropdownRef.current.contains(target) &&
+        !navRef.current?.contains(target)
+      ) {
+        setLanguageOpen(false);
+      }
+
+      // Don't close mobile language dropdown if clicking inside mobile menu
+      // Only close if clicking completely outside the mobile menu
+      if (
+        mobileLanguageDropdownRef.current &&
+        !mobileLanguageDropdownRef.current.contains(target)
+      ) {
+        // Check if we're clicking inside the mobile menu but outside the language dropdown
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (mobileMenu && mobileMenu.contains(target)) {
+          // Click is inside mobile menu but outside language dropdown - close language dropdown
+          setMobileLanguageOpen(false);
+        }
+      }
+    };
+
+    if (typeof document !== "undefined") {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, []);
+
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case "Escape":
+          setIsOpen(false);
+          setLanguageOpen(false);
+          setMobileLanguageOpen(false);
+          break;
+        case "Tab":
+          if (isOpen && event.shiftKey) {
+            const focusableElements = navRef.current?.querySelectorAll(
+              'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            if (focusableElements && focusableElements.length > 0) {
+              const firstElement = focusableElements[0] as HTMLElement;
+              const lastElement = focusableElements[
+                focusableElements.length - 1
+              ] as HTMLElement;
+
+              if (document.activeElement === firstElement) {
+                event.preventDefault();
+                lastElement.focus();
+              }
+            }
+          }
+          break;
+      }
+    };
+
+    if (typeof document !== "undefined") {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isOpen]);
+
+  // Enhanced scroll-based section detection using scroll position
+  const handleSectionUpdate = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const sections = [
+      "hero",
+      "about",
+      "skills",
+      "projects",
+      "services",
+      "contact",
+    ];
+    const scrollPosition = window.scrollY + 150;
+
+    for (const section of sections) {
+      const element = document.getElementById(section);
+      if (element) {
+        const { offsetTop, offsetHeight } = element;
+        if (
+          scrollPosition >= offsetTop &&
+          scrollPosition < offsetTop + offsetHeight
+        ) {
+          setActiveSection(section);
+          break;
+        }
+      }
+    }
+  }, []);
+
+  // Use framer-motion's scroll hook for better performance
+  useMotionValueEvent(
+    scrollY,
+    "change",
+    useCallback(
+      (latest) => {
+        setIsScrolled(latest > 50);
+        setIsScrolling(true);
+
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+
+        scrollTimeoutRef.current = setTimeout(() => {
+          setIsScrolling(false);
+        }, 150);
+
+        // Update active section based on scroll position
+        handleSectionUpdate();
+      },
+      [handleSectionUpdate]
+    )
+  );
+
+  const scrollToSection = useCallback((href: string) => {
+    // Check if we're in the browser environment
+    if (typeof window === "undefined") return;
+
+    try {
+      const targetId = href.substring(1);
+      const element = document.getElementById(targetId);
+
+      if (element) {
+        const headerOffset = 100;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      } else {
+        console.warn(`Element with id "${targetId}" not found`);
+      }
+    } catch (error) {
+      console.error("Error scrolling to section:", error);
+    }
+
     setIsOpen(false);
-  };
+    setMobileLanguageOpen(false);
+  }, []);
 
-  const handleLanguageToggle = () => {
-    setLanguageOpen(!languageOpen);
-  };
-
-  const handleLanguageSelect = (lang: (typeof languages)[0]) => {
-    setLanguage(lang);
-    setLanguageOpen(false);
-  };
-
-  // Debug logging
+  // Cleanup timeout on unmount
   useEffect(() => {
-    if (mounted) {
-      console.log("Navigation mounted, current theme:", theme);
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleLanguageToggle = useCallback(() => {
+    setLanguageOpen((prev) => !prev);
+  }, []);
+
+  const handleMobileLanguageToggle = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMobileLanguageOpen((prev) => !prev);
+  }, []);
+
+  const handleLanguageSelect = useCallback(
+    (lang: (typeof languages)[0], e?: React.MouseEvent) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      try {
+        setLanguage(lang);
+        setLanguageOpen(false);
+        setMobileLanguageOpen(false);
+      } catch (error) {
+        console.error("Error setting language:", error);
+      }
+    },
+    [setLanguage]
+  );
+
+  const handleThemeToggle = useCallback(() => {
+    try {
+      toggleTheme();
+    } catch (error) {
+      console.error("Error toggling theme:", error);
     }
-  }, [mounted, theme]);
+  }, [toggleTheme]);
 
-  const handleThemeToggle = () => {
-    console.log("Theme toggle clicked, current theme:", theme);
-    toggleTheme();
-  };
+  const handleMobileMenuToggle = useCallback(() => {
+    setIsOpen((prev) => !prev);
+    setMobileLanguageOpen(false);
+  }, []);
 
-  // Don't render theme-dependent content until mounted
-  if (!mounted) {
-    return (
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.6, -0.05, 0.01, 0.99] }}
-        className={`fixed top-3 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 w-[93%] max-w-5xl`}
-        role="navigation"
-        aria-label="Main navigation"
-      >
-        <div className="relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border border-gray-200/30 dark:border-gray-700/30 shadow-lg">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-14 sm:h-16">
-              {/* Logo */}
-              <div className="flex items-center">
-                <div className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400 pr-4">
-                  Mateo
-                </div>
-              </div>
-              {/* Skeleton for theme toggle */}
-              <div className="flex items-center space-x-2">
-                <div className="p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 w-10 h-10 animate-pulse" />
-                <div className="lg:hidden p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 w-10 h-10 animate-pulse" />
-              </div>
+  const LoadingSkeleton = () => (
+    <motion.nav
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.6, -0.05, 0.01, 0.99] }}
+      className="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 w-[93%] max-w-5xl"
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      <div className="relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border border-gray-200/30 dark:border-gray-700/30 shadow-lg">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <div className="flex items-center">
+              <div className="w-16 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 w-10 h-10 animate-pulse" />
+              <div className="p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 w-16 h-10 animate-pulse hidden sm:block" />
+              <div className="lg:hidden p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 w-10 h-10 animate-pulse" />
             </div>
           </div>
         </div>
-      </motion.nav>
-    );
+      </div>
+    </motion.nav>
+  );
+
+  if (!mounted) {
+    return <LoadingSkeleton />;
   }
 
   return (
@@ -186,7 +395,6 @@ const Navigation: React.FC = () => {
         >
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-14 sm:h-16">
-              {/* Logo */}
               <div className="flex items-center">
                 <motion.button
                   onClick={() => scrollToSection("#hero")}
@@ -199,7 +407,6 @@ const Navigation: React.FC = () => {
                 </motion.button>
               </div>
 
-              {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center space-x-1">
                 {navItems.map((item, index) => {
                   const IconComponent = item.icon;
@@ -253,9 +460,7 @@ const Navigation: React.FC = () => {
                 })}
               </div>
 
-              {/* Controls */}
               <div className="flex items-center space-x-2">
-                {/* Theme Toggle */}
                 <motion.button
                   onClick={handleThemeToggle}
                   whileHover={{ scale: 1.05, y: -1 }}
@@ -264,6 +469,7 @@ const Navigation: React.FC = () => {
                   aria-label={`Switch to ${
                     theme === "light" ? "dark" : "light"
                   } mode`}
+                  disabled={isScrolling}
                 >
                   <motion.div
                     animate={
@@ -281,8 +487,10 @@ const Navigation: React.FC = () => {
                   </motion.div>
                 </motion.button>
 
-                {/* Language Dropdown */}
-                <div className="relative hidden sm:block">
+                <div
+                  className="relative hidden sm:block"
+                  ref={languageDropdownRef}
+                >
                   <motion.button
                     onClick={handleLanguageToggle}
                     whileHover={{ scale: 1.05, y: -1 }}
@@ -294,7 +502,7 @@ const Navigation: React.FC = () => {
                   >
                     <HiGlobeAlt className="w-4 h-4" aria-hidden="true" />
                     <span className="text-xs" aria-hidden="true">
-                      {currentLanguage.code.toUpperCase()}
+                      {currentLanguage?.code?.toUpperCase() || "EN"}
                     </span>
                     <motion.div
                       animate={
@@ -315,7 +523,7 @@ const Navigation: React.FC = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                        className="absolute right-0 top-full mt-2 w-36 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl py-2"
+                        className="absolute right-0 top-full mt-2 w-36 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl py-2 z-50"
                         role="menu"
                         aria-orientation="vertical"
                       >
@@ -327,13 +535,13 @@ const Navigation: React.FC = () => {
                             }}
                             onClick={() => handleLanguageSelect(lang)}
                             className={`w-full px-3 py-2 text-left text-sm transition-colors duration-200 flex items-center space-x-2 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 ${
-                              currentLanguage.code === lang.code
+                              currentLanguage?.code === lang.code
                                 ? "text-blue-600 dark:text-blue-400"
                                 : "text-gray-700 dark:text-gray-300"
                             }`}
                             role="menuitem"
                             aria-current={
-                              currentLanguage.code === lang.code
+                              currentLanguage?.code === lang.code
                                 ? "true"
                                 : undefined
                             }
@@ -349,9 +557,8 @@ const Navigation: React.FC = () => {
                   </AnimatePresence>
                 </div>
 
-                {/* Mobile Menu Button */}
                 <motion.button
-                  onClick={() => setIsOpen(!isOpen)}
+                  onClick={handleMobileMenuToggle}
                   whileHover={{ scale: 1.05, y: -1 }}
                   whileTap={{ scale: 0.95 }}
                   className="lg:hidden p-2.5 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -391,7 +598,6 @@ const Navigation: React.FC = () => {
         </motion.div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -440,32 +646,102 @@ const Navigation: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="flex items-center justify-between pt-6 mt-6 border-t border-gray-200 dark:border-gray-700"
+                className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700 space-y-4"
               >
                 <motion.button
                   onClick={handleThemeToggle}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   aria-label={`Switch to ${
                     theme === "light" ? "dark" : "light"
                   } mode`}
                 >
                   {theme === "light" ? (
-                    <HiMoon className="w-4 h-4" aria-hidden="true" />
+                    <HiMoon className="w-5 h-5" aria-hidden="true" />
                   ) : (
-                    <HiSun className="w-4 h-4" aria-hidden="true" />
+                    <HiSun className="w-5 h-5" aria-hidden="true" />
                   )}
-                  <span className="text-sm">
-                    {theme === "light" ? t("theme.dark") : t("theme.light")}
+                  <span className="font-medium">
+                    {theme === "light"
+                      ? t("theme.dark") || "Dark Mode"
+                      : t("theme.light") || "Light Mode"}
                   </span>
                 </motion.button>
 
-                <div className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800">
-                  <HiGlobeAlt className="w-4 h-4" aria-hidden="true" />
-                  <span className="text-sm font-medium">
-                    {currentLanguage.name}
-                  </span>
+                <div className="relative" ref={mobileLanguageDropdownRef}>
+                  <motion.button
+                    onClick={handleMobileLanguageToggle}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label="Select language"
+                    aria-expanded={mobileLanguageOpen}
+                    aria-haspopup="true"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <HiGlobeAlt className="w-5 h-5" aria-hidden="true" />
+                      <span className="font-medium">
+                        {currentLanguage?.name || "English"}
+                      </span>
+                    </div>
+                    <motion.div
+                      animate={
+                        shouldReduceMotion
+                          ? {}
+                          : { rotate: mobileLanguageOpen ? 180 : 0 }
+                      }
+                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                    >
+                      <HiChevronDown className="w-4 h-4" aria-hidden="true" />
+                    </motion.div>
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {mobileLanguageOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                        className="mt-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 shadow-xl py-2 z-50"
+                        role="menu"
+                        aria-orientation="vertical"
+                        onClick={(e: any) => e.stopPropagation()}
+                      >
+                        {languages.map((lang) => (
+                          <motion.button
+                            key={lang.code}
+                            whileHover={{
+                              backgroundColor: "rgba(156, 163, 175, 0.1)",
+                            }}
+                            onClick={(e: any) => handleLanguageSelect(lang, e)}
+                            className={`w-full px-4 py-3 text-left transition-colors duration-200 flex items-center space-x-3 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 ${
+                              currentLanguage?.code === lang.code
+                                ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                                : "text-gray-700 dark:text-gray-300"
+                            }`}
+                            role="menuitem"
+                            aria-current={
+                              currentLanguage?.code === lang.code
+                                ? "true"
+                                : undefined
+                            }
+                          >
+                            <span className="text-lg" aria-hidden="true">
+                              {lang.flag}
+                            </span>
+                            <span className="font-medium">{lang.name}</span>
+                            {currentLanguage?.code === lang.code && (
+                              <span className="ml-auto text-blue-600 dark:text-blue-400">
+                                ✓
+                              </span>
+                            )}
+                          </motion.button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             </div>

@@ -22,6 +22,7 @@ const skillsData = [
     icon: SiReact,
     color: "from-blue-400 to-cyan-400",
     category: "Frontend",
+    docsUrl: "https://react.dev/",
   },
   {
     name: "Next.js",
@@ -29,6 +30,7 @@ const skillsData = [
     icon: SiNextdotjs,
     color: "from-gray-700 to-gray-900",
     category: "Frontend",
+    docsUrl: "https://nextjs.org/docs",
   },
   {
     name: "TypeScript",
@@ -36,6 +38,7 @@ const skillsData = [
     icon: SiTypescript,
     color: "from-blue-500 to-blue-700",
     category: "Lenguaje",
+    docsUrl: "https://www.typescriptlang.org/docs/",
   },
   {
     name: "Node.js",
@@ -43,6 +46,7 @@ const skillsData = [
     icon: SiNodedotjs,
     color: "from-green-400 to-green-600",
     category: "Backend",
+    docsUrl: "https://nodejs.org/en/docs/",
   },
   {
     name: "MongoDB",
@@ -50,6 +54,7 @@ const skillsData = [
     icon: SiMongodb,
     color: "from-green-500 to-green-700",
     category: "Base de Datos",
+    docsUrl: "https://www.mongodb.com/docs/",
   },
   {
     name: "Flutter",
@@ -57,6 +62,7 @@ const skillsData = [
     icon: SiFlutter,
     color: "from-blue-300 to-blue-500",
     category: "Mobile",
+    docsUrl: "https://docs.flutter.dev/",
   },
   {
     name: "Express.js",
@@ -64,6 +70,7 @@ const skillsData = [
     icon: SiExpress,
     color: "from-gray-600 to-gray-800",
     category: "Backend",
+    docsUrl: "https://expressjs.com/",
   },
   {
     name: "MySQL",
@@ -71,6 +78,7 @@ const skillsData = [
     icon: SiMysql,
     color: "from-orange-400 to-orange-600",
     category: "Base de Datos",
+    docsUrl: "https://dev.mysql.com/doc/",
   },
   {
     name: "JavaScript",
@@ -78,6 +86,7 @@ const skillsData = [
     icon: SiJavascript,
     color: "from-yellow-400 to-yellow-500",
     category: "Lenguaje",
+    docsUrl: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
   },
 ];
 
@@ -114,11 +123,23 @@ const Skills: React.FC = () => {
         );
 
   return (
-    <section
-      id="skills"
-      className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
-    >
-      <div className="container mx-auto px-4">
+    <section id="skills" className="py-20 relative">
+      {/* Section-specific overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50/20 via-transparent to-gray-100/10 dark:from-gray-900/20 dark:via-transparent dark:to-gray-800/10" />
+
+      {/* Subtle background elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute top-1/3 left-1/3 w-64 h-64 bg-gradient-to-r from-blue-500/3 to-purple-500/3 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+        <div
+          className="absolute bottom-1/3 right-1/3 w-48 h-48 bg-gradient-to-r from-cyan-500/3 to-indigo-500/3 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "3s" }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -250,21 +271,27 @@ const Skills: React.FC = () => {
                       {t(skill.descriptionKey)}
                     </p>
 
-                    {/* Hover indicator */}
-                    <div
+                    {/* Hover indicator - now clickable */}
+                    <a
+                      href={skill.docsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={`
                         flex items-center text-xs text-blue-600 dark:text-blue-400 font-medium
                         opacity-0 group-hover:opacity-100 
                         transform translate-y-2 group-hover:translate-y-0
                         transition-all duration-300 ease-out
+                        hover:text-blue-700 dark:hover:text-blue-300
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md
                       `}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <span
                         className={`
                           group-hover:translate-x-1 transition-transform duration-300
                         `}
                       >
-                        Ver más
+                        Ver documentación
                       </span>
                       <svg
                         className={`
@@ -279,10 +306,10 @@ const Skills: React.FC = () => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M9 5l7 7-7 7"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                         />
                       </svg>
-                    </div>
+                    </a>
                   </div>
 
                   {/* Shine effect */}

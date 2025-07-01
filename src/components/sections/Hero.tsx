@@ -199,11 +199,17 @@ const Hero: React.FC = () => {
     <section
       ref={heroRef}
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-purple-50/50 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/20 pt-20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 sm:pt-20"
       role="banner"
       aria-label="Hero section"
     >
-      {/* Enhanced Modern Background */}
+      {/* Section-specific overlay */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-blue-50/20 dark:from-transparent dark:via-gray-900/10 dark:to-blue-950/20"
+        aria-hidden="true"
+      />
+
+      {/* Enhanced section-specific background elements */}
       <div className="absolute inset-0" aria-hidden="true">
         <motion.div
           className="absolute inset-0 opacity-40"
@@ -212,24 +218,24 @@ const Hero: React.FC = () => {
               50 + mousePosition.x * 0.03
             }% ${
               50 + mousePosition.y * 0.03
-            }%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)`,
+            }%, rgba(59, 130, 246, 0.06) 0%, transparent 60%)`,
           }}
         />
 
         {!shouldReduceMotion &&
-          Array.from({ length: 12 }).map((_, i) => (
+          Array.from({ length: 8 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute"
+              className="absolute hidden sm:block"
               style={{
-                left: `${15 + i * 8}%`,
-                top: `${20 + i * 6}%`,
+                left: `${15 + i * 10}%`,
+                top: `${20 + i * 8}%`,
                 x: mouseXSpring,
                 y: mouseYSpring,
               }}
               animate={{
                 y: [0, -20, 0],
-                opacity: [0.3, 0.8, 0.3],
+                opacity: [0.2, 0.6, 0.2],
                 scale: [1, 1.2, 1],
               }}
               transition={{
@@ -243,34 +249,21 @@ const Hero: React.FC = () => {
               <div
                 className={`w-1 h-1 rounded-full ${
                   i % 4 === 0
-                    ? "bg-blue-400/30"
+                    ? "bg-blue-400/20"
                     : i % 4 === 1
-                    ? "bg-purple-400/30"
+                    ? "bg-purple-400/20"
                     : i % 4 === 2
-                    ? "bg-cyan-400/30"
-                    : "bg-pink-400/30"
+                    ? "bg-cyan-400/20"
+                    : "bg-pink-400/20"
                 }`}
               />
             </motion.div>
           ))}
-
-        <motion.div
-          className="absolute inset-0 opacity-[0.01] dark:opacity-[0.02]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: "80px 80px",
-            x: mouseXSpring,
-            y: mouseYSpring,
-          }}
-        />
       </div>
 
       <motion.div
         style={{ y: shouldReduceMotion ? 0 : y }}
-        className="container mx-auto px-4 relative z-10"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
       >
         <motion.div
           variants={containerVariants}
@@ -278,10 +271,13 @@ const Hero: React.FC = () => {
           animate={controls}
           className="max-w-6xl mx-auto"
         >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-6">
-              <motion.div variants={itemVariants} className="space-y-4">
+            <div className="space-y-6 sm:space-y-8 text-center lg:text-left order-2 lg:order-1">
+              <motion.div
+                variants={itemVariants}
+                className="space-y-4 sm:space-y-6"
+              >
                 {/* Status Badge */}
                 <motion.div
                   initial={{ opacity: 0, x: -30 }}
@@ -290,7 +286,7 @@ const Hero: React.FC = () => {
                   className="inline-block"
                 >
                   <motion.span
-                    className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 text-green-800 dark:text-green-200 border border-green-200/50 dark:border-green-700/50 shadow-lg backdrop-blur-sm"
+                    className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 text-green-800 dark:text-green-200 border border-green-200/50 dark:border-green-700/50 shadow-lg backdrop-blur-sm"
                     whileHover={{ scale: 1.05, y: -2 }}
                     animate={
                       shouldReduceMotion
@@ -333,7 +329,7 @@ const Hero: React.FC = () => {
 
                 <motion.h1
                   variants={itemVariants}
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
                 >
                   <span className="block text-gray-900 dark:text-white mb-2">
                     {t("hero.greeting")}
@@ -383,7 +379,7 @@ const Hero: React.FC = () => {
                 </motion.h1>
 
                 <motion.div variants={itemVariants} className="relative">
-                  <div className="text-lg sm:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 font-light h-8 sm:h-10 flex items-center">
+                  <div className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 font-light h-6 sm:h-8 md:h-10 flex items-center justify-center lg:justify-start">
                     <span className="relative">
                       <motion.span
                         key={displayText}
@@ -394,7 +390,7 @@ const Hero: React.FC = () => {
                         {displayText}
                       </motion.span>
                       <motion.span
-                        className="inline-block w-0.5 h-6 sm:h-7 bg-gradient-to-b from-blue-600 to-purple-600 ml-1"
+                        className="inline-block w-0.5 h-5 sm:h-6 md:h-7 bg-gradient-to-b from-blue-600 to-purple-600 ml-1"
                         animate={
                           shouldReduceMotion
                             ? {}
@@ -416,7 +412,7 @@ const Hero: React.FC = () => {
 
                 <motion.p
                   variants={itemVariants}
-                  className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl font-light"
+                  className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl mx-auto lg:mx-0 font-light px-4 sm:px-0"
                 >
                   {t("hero.description")}
                 </motion.p>
@@ -424,17 +420,17 @@ const Hero: React.FC = () => {
 
               <motion.div
                 variants={itemVariants}
-                className="flex flex-wrap gap-4"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-4 sm:px-0"
               >
                 <motion.button
                   whileHover={{ scale: 1.05, y: -3 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => scrollToSection("projects")}
-                  className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl shadow-xl overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl shadow-xl overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
                   aria-label={t("hero.cta.projects")}
                 >
                   <motion.div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="relative z-10 flex items-center space-x-2">
+                  <span className="relative z-10 flex items-center justify-center space-x-2">
                     <span>{t("hero.cta.projects")}</span>
                     <motion.svg
                       className="w-4 h-4"
@@ -459,7 +455,7 @@ const Hero: React.FC = () => {
                   whileHover={{ scale: 1.05, y: -3 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => scrollToSection("contact")}
-                  className="group px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 shadow-lg relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 shadow-lg relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
                   aria-label={t("hero.cta.contact")}
                 >
                   <span className="relative z-10">{t("hero.cta.contact")}</span>
@@ -467,10 +463,10 @@ const Hero: React.FC = () => {
                 </motion.button>
               </motion.div>
 
-              {/* Stats */}
+              {/* Stats - Mobile Optimized */}
               <motion.div
                 variants={itemVariants}
-                className="grid grid-cols-3 gap-6 pt-6"
+                className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 px-4 sm:px-0"
               >
                 {[
                   {
@@ -505,7 +501,7 @@ const Hero: React.FC = () => {
                     className="text-center group cursor-pointer"
                   >
                     <motion.div
-                      className="text-xl sm:text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent mb-1"
+                      className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent mb-1"
                       whileHover={{
                         scale: 1.1,
                         transition: { duration: 0.3, ease: "easeOut" },
@@ -525,8 +521,8 @@ const Hero: React.FC = () => {
               </motion.div>
             </div>
 
-            {/* Right Content - Code Editor */}
-            <div className="relative lg:block hidden">
+            {/* Right Content - Code Editor - Mobile Hidden, Tablet+ Visible */}
+            <div className="relative order-1 lg:order-2 flex justify-center lg:block hidden md:block">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -539,7 +535,7 @@ const Hero: React.FC = () => {
                 className="relative"
               >
                 <motion.div
-                  className="relative w-96 h-96 mx-auto"
+                  className="relative w-80 h-80 lg:w-96 lg:h-96 mx-auto"
                   style={
                     shouldReduceMotion
                       ? {}
@@ -564,7 +560,7 @@ const Hero: React.FC = () => {
                     onMouseLeave={() => setIsCodeHovered(false)}
                     transition={{ type: "spring", stiffness: 400 }}
                   >
-                    <div className="absolute inset-3 rounded-2xl bg-gradient-to-br from-gray-900 to-blue-900 text-green-400 font-mono text-[10px] p-4 overflow-hidden">
+                    <div className="absolute inset-3 rounded-2xl bg-gradient-to-br from-gray-900 to-blue-900 text-green-400 font-mono text-[9px] lg:text-[10px] p-3 lg:p-4 overflow-hidden">
                       <motion.div
                         key={currentCodeIndex}
                         initial={{ opacity: 0, y: 20 }}
@@ -621,48 +617,48 @@ const Hero: React.FC = () => {
                     </div>
                   </motion.div>
 
-                  {/* Floating Icons */}
+                  {/* Floating Icons - Optimized for smaller screens */}
                   {[
                     {
                       icon: "⚛️",
-                      position: "-top-2 right-8",
+                      position: "-top-2 right-6 lg:right-8",
                       delay: 0,
                       color: "from-blue-500 to-cyan-500",
                     },
                     {
                       icon: "🚀",
-                      position: "top-8 -right-2",
+                      position: "top-6 lg:top-8 -right-2",
                       delay: 0.5,
                       color: "from-purple-500 to-pink-500",
                     },
                     {
                       icon: "💻",
-                      position: "bottom-8 -left-2",
+                      position: "bottom-6 lg:bottom-8 -left-2",
                       delay: 1,
                       color: "from-green-500 to-emerald-500",
                     },
                     {
                       icon: "🎨",
-                      position: "-bottom-2 left-8",
+                      position: "-bottom-2 left-6 lg:left-8",
                       delay: 1.5,
                       color: "from-orange-500 to-red-500",
                     },
                     {
                       icon: "⚡",
-                      position: "top-1/2 -left-6",
+                      position: "top-1/2 -left-4 lg:-left-6",
                       delay: 2,
                       color: "from-yellow-500 to-orange-500",
                     },
                     {
                       icon: "🔥",
-                      position: "top-1/2 -right-6",
+                      position: "top-1/2 -right-4 lg:-right-6",
                       delay: 2.5,
                       color: "from-red-500 to-pink-500",
                     },
                   ].map((item, index) => (
                     <motion.div
                       key={index}
-                      className={`absolute ${item.position} w-14 h-14 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl flex items-center justify-center text-xl cursor-pointer z-20 overflow-hidden`}
+                      className={`absolute ${item.position} w-10 h-10 lg:w-14 lg:h-14 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl flex items-center justify-center text-lg lg:text-xl cursor-pointer z-20 overflow-hidden`}
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{
                         opacity: 1,
@@ -711,7 +707,7 @@ const Hero: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 3, duration: 1, ease: "easeOut" }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2"
       >
         <motion.button
           animate={shouldReduceMotion ? {} : { y: [0, 10, 0] }}
@@ -729,11 +725,11 @@ const Hero: React.FC = () => {
           }}
           aria-label={t("hero.scroll")}
         >
-          <span className="text-sm mb-3 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300 font-medium">
+          <span className="text-xs sm:text-sm mb-2 sm:mb-3 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300 font-medium">
             {t("hero.scroll")}
           </span>
           <motion.div
-            className="w-6 h-10 border-2 border-gray-300 dark:border-gray-600 rounded-full flex justify-center relative overflow-hidden"
+            className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-gray-300 dark:border-gray-600 rounded-full flex justify-center relative overflow-hidden"
             whileHover={{
               borderColor: "#3b82f6",
               boxShadow: "0 0 20px rgba(59, 130, 246, 0.3)",
@@ -748,7 +744,7 @@ const Hero: React.FC = () => {
                 ease: "easeInOut",
                 repeatType: "loop",
               }}
-              className="w-1 h-3 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mt-2"
+              className="w-1 h-2 sm:h-3 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mt-1 sm:mt-2"
             />
           </motion.div>
         </motion.button>

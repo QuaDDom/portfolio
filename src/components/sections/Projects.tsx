@@ -20,7 +20,6 @@ interface Project {
   year?: string;
 }
 
-// Updated projects data with translation keys
 const projectsData: Project[] = [
   {
     id: 1,
@@ -129,7 +128,6 @@ const Projects: React.FC = () => {
   const [filter, setFilter] = React.useState<string>("all");
   const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
 
-  // Translate categories
   const categories = [
     { id: "all", name: t("projects.category.all"), count: projectsData.length },
     {
@@ -163,7 +161,6 @@ const Projects: React.FC = () => {
     filter === "all"
       ? projectsData
       : projectsData.filter((project) => project.category === filter);
-
   const featuredProjects = projectsData.filter((project) => project.featured);
 
   const getStatusText = (status?: string) => {
@@ -180,12 +177,23 @@ const Projects: React.FC = () => {
   };
 
   return (
-    <section
-      id="projects"
-      className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800"
-    >
-      <div className="container mx-auto px-4">
-        {/* Header */}
+    <section id="projects" className="py-20 relative">
+      {/* Section-specific overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-purple-50/15 dark:from-blue-950/15 dark:via-transparent dark:to-purple-950/10" />
+
+      {/* Background elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute top-1/4 left-1/6 w-72 h-72 bg-gradient-to-r from-purple-500/4 to-pink-500/4 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/6 w-56 h-56 bg-gradient-to-r from-green-500/4 to-emerald-500/4 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "4s" }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -200,7 +208,6 @@ const Projects: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Featured Projects */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -221,34 +228,32 @@ const Projects: React.FC = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
-                whileHover={{ y: -10 }}
-                className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 cursor-pointer"
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 cursor-pointer transition-all duration-500"
                 onClick={() => handleProjectClick(project)}
               >
                 <div className="relative h-64 overflow-hidden">
-                  <img
+                  <motion.img
                     src={project.image}
                     alt={t(project.titleKey)}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-                  {/* Status Badge */}
                   <div className="absolute top-4 right-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
                         project.status === "completed"
-                          ? "bg-green-500/90 text-white"
+                          ? "bg-green-500/90 text-white border border-green-400/30"
                           : project.status === "in-progress"
-                          ? "bg-blue-500/90 text-white"
-                          : "bg-gray-500/90 text-white"
+                          ? "bg-blue-500/90 text-white border border-blue-400/30"
+                          : "bg-gray-500/90 text-white border border-gray-400/30"
                       }`}
                     >
                       {getStatusText(project.status)}
                     </span>
                   </div>
 
-                  {/* Tech Stack Preview */}
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="flex flex-wrap gap-2">
                       {project.technologies
@@ -256,13 +261,13 @@ const Projects: React.FC = () => {
                         .map((tech, techIndex) => (
                           <span
                             key={techIndex}
-                            className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-white text-xs font-medium"
+                            className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-white text-xs font-medium border border-white/30"
                           >
                             {tech}
                           </span>
                         ))}
                       {project.technologies.length > 3 && (
-                        <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-white text-xs font-medium">
+                        <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-white text-xs font-medium border border-white/30">
                           +{project.technologies.length - 3}
                         </span>
                       )}
@@ -272,15 +277,15 @@ const Projects: React.FC = () => {
 
                 <div className="p-8">
                   <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <div className="flex-1">
+                      <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                         {t(project.titleKey)}
                       </h4>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                         {t(project.descriptionKey)}
                       </p>
                     </div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full ml-4">
                       {project.year}
                     </span>
                   </div>
@@ -294,7 +299,7 @@ const Projects: React.FC = () => {
                           e.stopPropagation();
                           window.open(project.liveLink, "_blank");
                         }}
-                        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                        className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300"
                       >
                         <HiExternalLink className="w-4 h-4" />
                         <span>{t("projects.button.view")}</span>
@@ -307,7 +312,7 @@ const Projects: React.FC = () => {
                           e.stopPropagation();
                           window.open(project.githubLink, "_blank");
                         }}
-                        className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
                       >
                         <HiCode className="w-4 h-4" />
                         <span>{t("projects.button.code")}</span>
@@ -317,7 +322,7 @@ const Projects: React.FC = () => {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      className="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
                     >
                       <HiEye className="w-5 h-5" />
                     </motion.button>
@@ -328,9 +333,7 @@ const Projects: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* All Projects */}
         <div>
-          {/* Filters */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -339,13 +342,15 @@ const Projects: React.FC = () => {
           >
             <div className="flex flex-wrap gap-3 mb-4 sm:mb-0">
               {categories.map((category) => (
-                <button
+                <motion.button
                   key={category.id}
                   onClick={() => setFilter(category.id)}
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
                     filter === category.id
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                      : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 shadow-md"
+                      : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 shadow-md hover:shadow-lg"
                   }`}
                 >
                   <span>{category.name}</span>
@@ -358,17 +363,19 @@ const Projects: React.FC = () => {
                   >
                     {category.count}
                   </span>
-                </button>
+                </motion.button>
               ))}
             </div>
 
             <div className="flex items-center space-x-2">
-              <button
+              <motion.button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-colors ${
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-2 rounded-lg transition-colors duration-300 ${
                   viewMode === "grid"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600"
                 }`}
               >
                 <svg
@@ -378,13 +385,15 @@ const Projects: React.FC = () => {
                 >
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-colors ${
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-2 rounded-lg transition-colors duration-300 ${
                   viewMode === "list"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600"
                 }`}
               >
                 <svg
@@ -398,11 +407,10 @@ const Projects: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-              </button>
+              </motion.button>
             </div>
           </motion.div>
 
-          {/* Projects Grid/List */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`${filter}-${viewMode}`}
@@ -423,18 +431,18 @@ const Projects: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className={`group cursor-pointer ${
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  className={`group cursor-pointer transition-all duration-500 ${
                     viewMode === "grid"
-                      ? "bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-gray-200/50 dark:border-gray-700/50"
-                      : "bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50 flex items-center space-x-6"
+                      ? "bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl"
+                      : "bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50 flex items-center space-x-6 hover:shadow-xl"
                   }`}
                   onClick={() => handleProjectClick(project)}
                 >
                   {viewMode === "grid" ? (
                     <>
                       <div className="relative h-48 overflow-hidden">
-                        <img
+                        <motion.img
                           src={project.image}
                           alt={t(project.titleKey)}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -442,7 +450,7 @@ const Projects: React.FC = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                       <div className="p-6">
-                        <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                           {t(project.titleKey)}
                         </h4>
                         <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
@@ -459,26 +467,31 @@ const Projects: React.FC = () => {
                                 {tech}
                               </span>
                             ))}
+                          {project.technologies.length > 3 && (
+                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-xs font-medium">
+                              +{project.technologies.length - 3}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </>
                   ) : (
                     <>
-                      <img
+                      <motion.img
                         src={project.image}
                         alt={t(project.titleKey)}
-                        className="w-24 h-24 object-cover rounded-xl flex-shrink-0"
+                        className="w-24 h-24 object-cover rounded-xl flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          <h4 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                             {t(project.titleKey)}
                           </h4>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                          <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
                             {project.year}
                           </span>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-400 mb-3">
+                        <p className="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                           {t(project.descriptionKey)}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -487,11 +500,16 @@ const Projects: React.FC = () => {
                             .map((tech, techIndex) => (
                               <span
                                 key={techIndex}
-                                className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs"
+                                className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium"
                               >
                                 {tech}
                               </span>
                             ))}
+                          {project.technologies.length > 4 && (
+                            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium">
+                              +{project.technologies.length - 4}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </>
@@ -502,7 +520,6 @@ const Projects: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Modal */}
         <AnimatePresence>
           {isModalOpen && selectedProject && (
             <motion.div
@@ -516,18 +533,26 @@ const Projects: React.FC = () => {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-700"
                 onClick={(e: any) => e.stopPropagation()}
               >
                 <div className="relative">
-                  <img
+                  <motion.img
                     src={selectedProject.image}
                     alt={t(selectedProject.titleKey)}
                     className="w-full h-64 object-cover rounded-t-3xl"
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.6 }}
                   />
-                  <button
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-t-3xl" />
+
+                  <motion.button
                     onClick={closeModal}
-                    className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors duration-300 backdrop-blur-sm"
                   >
                     <svg
                       className="w-6 h-6"
@@ -542,43 +567,61 @@ const Projects: React.FC = () => {
                         d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
-                  </button>
+                  </motion.button>
                 </div>
 
                 <div className="p-8">
-                  <div className="flex items-start justify-between mb-6">
-                    <div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="flex items-start justify-between mb-6"
+                  >
+                    <div className="flex-1">
                       <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                         {t(selectedProject.titleKey)}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-lg">
+                      <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                         {selectedProject.longDescriptionKey
                           ? t(selectedProject.longDescriptionKey)
                           : t(selectedProject.descriptionKey)}
                       </p>
                     </div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full ml-4">
                       {selectedProject.year}
                     </span>
-                  </div>
+                  </motion.div>
 
-                  <div className="mb-8">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mb-8"
+                  >
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                       {t("projects.modal.technologies")}
                     </h4>
                     <div className="flex flex-wrap gap-3">
                       {selectedProject.technologies.map((tech, index) => (
-                        <span
+                        <motion.span
                           key={index}
-                          className="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-800 dark:text-blue-200 rounded-xl font-medium"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.3 + index * 0.05 }}
+                          className="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-800 dark:text-blue-200 rounded-xl font-medium border border-blue-200/50 dark:border-blue-700/50"
                         >
                           {tech}
-                        </span>
+                        </motion.span>
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="flex gap-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="flex gap-4"
+                  >
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -590,6 +633,7 @@ const Projects: React.FC = () => {
                       <HiExternalLink className="w-5 h-5" />
                       <span>{t("projects.button.view")}</span>
                     </motion.button>
+
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -601,7 +645,7 @@ const Projects: React.FC = () => {
                       <HiCode className="w-5 h-5" />
                       <span>{t("projects.button.code")}</span>
                     </motion.button>
-                  </div>
+                  </motion.div>
                 </div>
               </motion.div>
             </motion.div>

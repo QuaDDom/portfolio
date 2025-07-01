@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../contexts/LanguageContext";
-import emailjs from "@emailjs/browser";
 import {
   HiMail,
   HiPhone,
@@ -14,15 +13,10 @@ import {
   HiRefresh,
   HiStar,
   HiTag,
+  HiPlus,
+  HiCalculator,
 } from "react-icons/hi";
 import { SiGithub, SiLinkedin, SiX, SiInstagram } from "react-icons/si";
-
-// Add EmailJS configuration
-const EMAILJS_CONFIG = {
-  serviceId: process.env.EMAILJS_SERVICE_ID || "",
-  templateId: process.env.EMAILJS_TEMPLATE_ID || "",
-  publicKey: process.env.EMAILJS_PUBLIC_KEY || "",
-};
 
 interface FormData {
   name: string;
@@ -50,8 +44,16 @@ interface Captcha {
 interface ServiceData {
   id: string;
   title: string;
-  price: string;
-  addOns: string[];
+  basePrice: string;
+  totalPrice: string;
+  addOns: Array<{
+    id: string;
+    name: string;
+    price: string;
+    description: string;
+  }>;
+  duration: string;
+  category: string;
 }
 
 const Contact: React.FC = () => {
@@ -75,13 +77,6 @@ const Contact: React.FC = () => {
   const [selectedServiceData, setSelectedServiceData] =
     useState<ServiceData | null>(null);
   const [submitError, setSubmitError] = useState<string>("");
-
-  // Initialize EmailJS once when component mounts
-  useEffect(() => {
-    if (EMAILJS_CONFIG.publicKey) {
-      emailjs.init(EMAILJS_CONFIG.publicKey);
-    }
-  }, []);
 
   const contactInfo = [
     {
@@ -115,19 +110,23 @@ const Contact: React.FC = () => {
   ];
 
   const budgetRanges = [
-    "< $1,000",
-    "$1,000 - $5,000",
+    "Menos de $500",
+    "$500 - $1,000",
+    "$1,000 - $2,500",
+    "$2,500 - $5,000",
     "$5,000 - $10,000",
     "$10,000 - $25,000",
-    "$25,000+",
+    "Más de $25,000",
+    "Presupuesto personalizado",
   ];
 
   const timelineOptions = [
-    "Lo antes posible",
+    "Lo antes posible (Express +50%)",
+    "En 1-2 semanas",
     "En 2-4 semanas",
     "En 1-2 meses",
     "En 3-6 meses",
-    "Flexible",
+    "Tengo flexibilidad de tiempo",
   ];
 
   const socialLinks = [
@@ -157,7 +156,6 @@ const Contact: React.FC = () => {
     },
   ];
 
-  // Generate math captcha
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
@@ -197,19 +195,142 @@ const Contact: React.FC = () => {
     generateCaptcha();
   }, []);
 
+  const generateEnhancedServiceMessage = (serviceData: ServiceData) => {
+    let message = `¡Hola! Estoy interesado en solicitar una cotización para el servicio "${serviceData.title}".
+
+📋 DETALLES DEL SERVICIO:
+• Servicio base: ${serviceData.title}
+• Precio base: ${serviceData.basePrice}
+• Tiempo estimado: ${serviceData.duration}`;
+
+    if (
+      serviceData.addOns &&
+      Array.isArray(serviceData.addOns) &&
+      serviceData.addOns.length > 0
+    ) {
+      const validAddOns = serviceData.addOns.filter(
+        (addon) =>
+          addon &&
+          typeof addon === "object" &&
+          addon.name &&
+          addon.price &&
+          addon.description
+      );
+
+      if (validAddOns.length > 0) {
+        message += `\n\n🎯 SERVICIOS ADICIONALES SELECCIONADOS:`;
+        validAddOns.forEach((addon) => {
+          message += `\n• ${addon.name} - ${addon.price}`;
+          message += `\n  ${addon.description}`;
+        });
+
+        message += `\n\n💰 PRECIO TOTAL ESTIMADO: ${serviceData.totalPrice}`;
+      }
+    }
+
+    message += `\n\n📞 ME GUSTARÍA OBTENER MÁS INFORMACIÓN SOBRE:
+• Cronograma detallado del proyecto
+• Proceso de desarrollo y metodología
+• Métodos de pago y condiciones
+• Garantías y soporte post-entrega
+• Posibilidad de personalización adicional
+
+¿Podrías confirmar la disponibilidad y enviarme una propuesta formal?
+
+¡Espero tu respuesta pronto!`;
+
+    return message;
+  };
+
+  const getBudgetFromPrice = (price: string): string => {
+    if (!price || typeof price !== "string") return "Presupuesto personalizado";
+
+    const numericPrice = parseInt(price.replace(/[^0-9]/g, "")) || 0;
+
+    if (numericPrice < 500) return "Menos de $500";
+    if (numericPrice < 1000) return "$500 - $1,000";
+    if (numericPrice < 2500) return "$1,000 - $2,500";
+    if (numericPrice < 5000) return "$2,500 - $5,000";
+    if (numericPrice < 10000) return "$5,000 - $10,000";
+    if (numericPrice < 25000) return "$10,000 - $25,000";
+    return "Más de $25,000";
+  };
+
+  const getTimelineFromDuration = (duration: string): string => {
+    if (!duration || typeof duration !== "string")
+      return "Tengo flexibilidad de tiempo";
+
+    const lowerDuration = duration.toLowerCase();
+
+    if (
+      lowerDuration.includes("5-7 días") ||
+      lowerDuration.includes("1 semana")
+    ) {
+      return "En 1-2 semanas";
+    }
+    if (lowerDuration.includes("2-3 semanas")) {
+      return "En 2-4 semanas";
+    }
+    if (
+      lowerDuration.includes("3-5 semanas") ||
+      lowerDuration.includes("1 mes")
+    ) {
+      return "En 1-2 meses";
+    }
+    if (
+      lowerDuration.includes("4-12 semanas") ||
+      lowerDuration.includes("meses")
+    ) {
+      return "En 3-6 meses";
+    }
+
+    return "Tengo flexibilidad de tiempo";
+  };
+
   useEffect(() => {
     const handleServiceSelection = (event: CustomEvent) => {
-      const serviceData = event.detail as ServiceData;
-      setSelectedServiceData(serviceData);
+      try {
+        const serviceData = event.detail as ServiceData;
 
-      // Auto-populate form
-      setFormData((prev) => ({
-        ...prev,
-        subject: `Consulta sobre ${serviceData.title}`,
-        message: generateServiceMessage(serviceData),
-        serviceType: serviceData.id,
-        budget: extractBudgetFromPrice(serviceData.price),
-      }));
+        if (!serviceData || typeof serviceData !== "object") {
+          console.error("Invalid service data received:", serviceData);
+          return;
+        }
+
+        const validatedServiceData: ServiceData = {
+          ...serviceData,
+          addOns: Array.isArray(serviceData.addOns)
+            ? serviceData.addOns.filter(
+                (addon) =>
+                  addon &&
+                  typeof addon === "object" &&
+                  addon.name &&
+                  addon.price &&
+                  addon.description
+              )
+            : [],
+        };
+
+        setSelectedServiceData(validatedServiceData);
+
+        setFormData((prev) => ({
+          ...prev,
+          subject: `Solicitud de cotización: ${
+            validatedServiceData.title || "Servicio"
+          }`,
+          message: generateEnhancedServiceMessage(validatedServiceData),
+          serviceType: validatedServiceData.category || "",
+          budget: getBudgetFromPrice(validatedServiceData.totalPrice || ""),
+          timeline:
+            validatedServiceData.duration &&
+            (validatedServiceData.duration.includes("express") ||
+              validatedServiceData.duration.includes("rápido"))
+              ? "Lo antes posible (Express +50%)"
+              : getTimelineFromDuration(validatedServiceData.duration || ""),
+        }));
+      } catch (error) {
+        console.error("Error handling service selection:", error);
+      }
     };
 
     window.addEventListener(
@@ -217,7 +338,6 @@ const Contact: React.FC = () => {
       handleServiceSelection as EventListener
     );
 
-    // Check for stored service data
     const storedService = localStorage.getItem("selectedService");
     if (storedService) {
       try {
@@ -226,6 +346,7 @@ const Contact: React.FC = () => {
         localStorage.removeItem("selectedService");
       } catch (error) {
         console.error("Error parsing stored service data:", error);
+        localStorage.removeItem("selectedService");
       }
     }
 
@@ -236,30 +357,6 @@ const Contact: React.FC = () => {
       );
     };
   }, []);
-
-  const generateServiceMessage = (serviceData: ServiceData) => {
-    let message = `Hola! Estoy interesado en el servicio "${serviceData.title}"`;
-
-    if (serviceData.addOns.length > 0) {
-      message += `\n\nServicios adicionales seleccionados:\n${serviceData.addOns
-        .map((addon) => `• ${addon}`)
-        .join("\n")}`;
-    }
-
-    message += `\n\nMe gustaría obtener más información sobre:\n• Cronograma detallado del proyecto\n• Proceso de desarrollo\n• Métodos de pago disponibles\n• Próximos pasos para comenzar\n\n¡Espero tu respuesta!`;
-
-    return message;
-  };
-
-  const extractBudgetFromPrice = (price: string): string => {
-    const numericPrice = parseInt(price.replace(/[^0-9]/g, ""));
-
-    if (numericPrice < 1000) return "< $1,000";
-    if (numericPrice < 5000) return "$1,000 - $5,000";
-    if (numericPrice < 10000) return "$5,000 - $10,000";
-    if (numericPrice < 25000) return "$10,000 - $25,000";
-    return "$25,000+";
-  };
 
   const clearServiceSelection = () => {
     setSelectedServiceData(null);
@@ -301,7 +398,6 @@ const Contact: React.FC = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors({ ...errors, [name]: undefined });
     }
@@ -316,28 +412,61 @@ const Contact: React.FC = () => {
     setSubmitError("");
 
     try {
-      // Check if EmailJS is properly configured
-      if (
-        !EMAILJS_CONFIG.serviceId ||
-        !EMAILJS_CONFIG.templateId ||
-        !EMAILJS_CONFIG.publicKey
-      ) {
-        // Fallback to mailto
-        const subject = encodeURIComponent(formData.subject);
-        const body = encodeURIComponent(
-          `Nombre: ${formData.name}\n` +
-            `Email: ${formData.email}\n` +
-            `Presupuesto: ${formData.budget}\n` +
-            `Tiempo: ${formData.timeline}\n` +
-            `Servicio: ${
-              selectedServiceData?.title || "Consulta general"
-            }\n\n` +
-            `Mensaje:\n${formData.message}`
-        );
+      const emailData = {
+        from_name: formData.name,
+        from_email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        budget: formData.budget || "No especificado",
+        timeline: formData.timeline || "No especificado",
+        service_type: selectedServiceData?.title || "Consulta general",
+        service_base_price: selectedServiceData?.basePrice || "N/A",
+        service_total_price: selectedServiceData?.totalPrice || "N/A",
+        service_duration: selectedServiceData?.duration || "N/A",
+        service_addons:
+          selectedServiceData?.addOns &&
+          Array.isArray(selectedServiceData.addOns)
+            ? selectedServiceData.addOns
+                .filter((addon) => addon && addon.name && addon.price)
+                .map((addon) => `${addon.name} (${addon.price})`)
+                .join(", ") || "Ninguno"
+            : "Ninguno",
+        addons_count:
+          selectedServiceData?.addOns &&
+          Array.isArray(selectedServiceData.addOns)
+            ? selectedServiceData.addOns.filter((addon) => addon && addon.name)
+                .length
+            : 0,
+        timestamp: new Date().toLocaleString("es-AR"),
+        client_type: selectedServiceData
+          ? "Cotización de Servicio"
+          : "Consulta General",
+      };
 
-        window.location.href = `mailto:matquadev@gmail.com?subject=${subject}&body=${body}`;
+      console.log("Sending email via API...");
+
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(emailData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || `HTTP error! status: ${response.status}`
+        );
+      }
+
+      if (result.success) {
+        console.log("Email sent successfully via API");
+
         setShowSuccess(true);
         setIsSubmitted(true);
+
         setFormData({
           name: "",
           email: "",
@@ -350,73 +479,67 @@ const Contact: React.FC = () => {
         setSelectedServiceData(null);
         setCaptchaInput("");
         generateCaptcha();
-        return;
+
+        setTimeout(() => setShowSuccess(false), 5000);
+      } else {
+        throw new Error(result.message || "Error desconocido");
+      }
+    } catch (error: any) {
+      console.error("Error sending email:", error);
+
+      let errorMessage = "Hubo un error al enviar el mensaje. ";
+
+      if (error.message) {
+        errorMessage += `${error.message} `;
       }
 
-      // Prepare email data for EmailJS
-      const emailData = {
-        from_name: formData.name,
-        from_email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        budget: formData.budget || "No especificado",
-        timeline: formData.timeline || "No especificado",
-        service_type: selectedServiceData?.title || "Consulta general",
-        service_price: selectedServiceData?.price || "N/A",
-        service_addons: selectedServiceData?.addOns.join(", ") || "Ninguno",
-        timestamp: new Date().toLocaleString("es-AR"),
-      };
+      // Check if it's an authentication error that provides fallback
+      if (
+        error.message?.includes("App Password") ||
+        error.message?.includes("credenciales")
+      ) {
+        errorMessage +=
+          "\n\n📧 MÉTODO ALTERNATIVO:\nPuedes enviarme tu mensaje directamente a: matquadev@gmail.com";
+        errorMessage += "\n\n💡 INCLUYE EN TU EMAIL:";
+        errorMessage += `\n• Nombre: ${formData.name}`;
+        errorMessage += `\n• Email: ${formData.email}`;
+        errorMessage += `\n• Asunto: ${formData.subject}`;
+        if (selectedServiceData) {
+          errorMessage += `\n• Servicio: ${selectedServiceData.title}`;
+          errorMessage += `\n• Presupuesto: ${selectedServiceData.totalPrice}`;
+        }
+        errorMessage += `\n• Mensaje: ${formData.message.substring(0, 100)}...`;
+      } else {
+        errorMessage +=
+          "Por favor, intenta nuevamente o contáctame directamente a matquadev@gmail.com";
+      }
 
-      // Send email via EmailJS
-      const result = await emailjs.send(
-        EMAILJS_CONFIG.serviceId,
-        EMAILJS_CONFIG.templateId,
-        emailData
-      );
+      setSubmitError(errorMessage);
 
-      console.log("Email sent successfully:", result);
-
-      setShowSuccess(true);
-      setIsSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-        budget: "",
-        timeline: "",
-        serviceType: "",
+      console.error("Detailed error:", {
+        error: error,
+        message: error.message,
       });
-      setSelectedServiceData(null);
-      setCaptchaInput("");
-      generateCaptcha();
-
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 5000);
-    } catch (error) {
-      console.error("Error sending email:", error);
-      setSubmitError(
-        "Hubo un error al enviar el mensaje. Por favor, intenta nuevamente o contáctame directamente a matquadev@gmail.com"
-      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <section
-      id="contact"
-      className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20 relative overflow-hidden"
-    >
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-400/10 to-indigo-400/10 rounded-full blur-3xl" />
+    <section id="contact" className="py-20 relative overflow-hidden">
+      {/* Consistent background with Services - seamless transition */}
+      <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900" />
+
+      {/* Subtle gradient overlay matching Services style */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50/20 via-transparent to-purple-50/20 dark:from-blue-900/10 dark:via-transparent dark:to-purple-900/10" />
+
+      {/* Minimal background decoration - consistent with Services */}
+      <div className="absolute inset-0 pointer-events-none opacity-40">
+        <div className="absolute top-32 left-32 w-80 h-80 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-32 right-32 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -433,14 +556,13 @@ const Contact: React.FC = () => {
 
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Contact Info */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="lg:col-span-1 space-y-8"
             >
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+              <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
                 <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
                   {t("contact.info.title")}
                 </h3>
@@ -456,7 +578,7 @@ const Contact: React.FC = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: index * 0.1 }}
                         whileHover={{ scale: 1.02, x: 5 }}
-                        className="flex items-center p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 hover:shadow-lg transition-all duration-300 group"
+                        className="flex items-center p-4 rounded-2xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 hover:shadow-md transition-all duration-300 group"
                       >
                         <div
                           className={`p-3 rounded-xl bg-gradient-to-r ${item.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
@@ -477,12 +599,11 @@ const Contact: React.FC = () => {
                 </div>
               </div>
 
-              {/* Social Links */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50"
+                className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-200 dark:border-gray-700"
               >
                 <h4 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">
                   {t("contact.social.title")}
@@ -498,7 +619,7 @@ const Contact: React.FC = () => {
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`flex items-center justify-center p-4 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-600 dark:text-gray-400 ${social.color} hover:shadow-lg transition-all duration-300 group`}
+                        className={`flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl text-gray-600 dark:text-gray-400 ${social.color} hover:shadow-md transition-all duration-300 group`}
                       >
                         <IconComponent className="w-6 h-6 mr-2" />
                         <span className="font-medium">{social.name}</span>
@@ -509,42 +630,39 @@ const Contact: React.FC = () => {
               </motion.div>
             </motion.div>
 
-            {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-2"
             >
-              {/* Service Selection Banner */}
               <AnimatePresence>
                 {selectedServiceData && (
                   <motion.div
                     initial={{ opacity: 0, y: -20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    className="mb-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6 backdrop-blur-sm"
+                    className="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
                         <div className="p-2 bg-blue-500 rounded-lg">
                           <HiStar className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white">
-                            Servicio seleccionado: {selectedServiceData.title}
+                          <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
+                            {selectedServiceData.title ||
+                              "Servicio Seleccionado"}
                           </h4>
                           <div className="flex items-center space-x-4 mt-1">
                             <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
                               <HiTag className="w-4 h-4 mr-1" />
-                              {selectedServiceData.price}
+                              Base: {selectedServiceData.basePrice || "N/A"}
                             </span>
-                            {selectedServiceData.addOns.length > 0 && (
-                              <span className="text-sm text-blue-600 dark:text-blue-400">
-                                +{selectedServiceData.addOns.length}{" "}
-                                complementos
-                              </span>
-                            )}
+                            <span className="text-sm text-blue-600 dark:text-blue-400 flex items-center">
+                              <HiClock className="w-4 h-4 mr-1" />
+                              {selectedServiceData.duration || "A definir"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -558,37 +676,69 @@ const Contact: React.FC = () => {
                       </motion.button>
                     </div>
 
-                    {selectedServiceData.addOns.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="mt-4 pt-4 border-t border-blue-500/20"
-                      >
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Servicios adicionales incluidos:
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedServiceData.addOns.map((addon, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium"
-                            >
-                              {addon}
-                            </span>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
+                    {selectedServiceData.addOns &&
+                      Array.isArray(selectedServiceData.addOns) &&
+                      selectedServiceData.addOns.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="border-t border-blue-200 dark:border-blue-700 pt-4"
+                        >
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                            <HiPlus className="w-4 h-4 mr-2 text-green-500" />
+                            Servicios adicionales incluidos:
+                          </p>
+                          <div className="space-y-2">
+                            {selectedServiceData.addOns
+                              .filter(
+                                (addon) => addon && addon.name && addon.price
+                              )
+                              .map((addon, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl"
+                                >
+                                  <div>
+                                    <span className="font-medium text-gray-900 dark:text-white">
+                                      {addon.name}
+                                    </span>
+                                    {addon.description && (
+                                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                        {addon.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                                    {addon.price}
+                                  </span>
+                                </div>
+                              ))}
+                          </div>
+
+                          {selectedServiceData.totalPrice && (
+                            <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-700">
+                              <div className="flex items-center justify-between">
+                                <span className="font-semibold text-gray-900 dark:text-white flex items-center">
+                                  <HiCalculator className="w-5 h-5 mr-2" />
+                                  Precio total estimado:
+                                </span>
+                                <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                  {selectedServiceData.totalPrice}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
                   </motion.div>
                 )}
               </AnimatePresence>
 
               <form
                 onSubmit={handleSubmit}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50 space-y-6"
+                className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6"
               >
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Name */}
                   <div>
                     <label
                       htmlFor="name"
@@ -621,7 +771,6 @@ const Contact: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Email */}
                   <div>
                     <label
                       htmlFor="email"
@@ -656,13 +805,17 @@ const Contact: React.FC = () => {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Budget */}
                   <div>
                     <label
                       htmlFor="budget"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                     >
                       {t("contact.form.budget")}
+                      {selectedServiceData && (
+                        <span className="text-blue-600 dark:text-blue-400 ml-2">
+                          (Estimado: {selectedServiceData.totalPrice})
+                        </span>
+                      )}
                     </label>
                     <select
                       name="budget"
@@ -680,13 +833,17 @@ const Contact: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Timeline */}
                   <div>
                     <label
                       htmlFor="timeline"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                     >
                       {t("contact.form.timeline")}
+                      {selectedServiceData && (
+                        <span className="text-blue-600 dark:text-blue-400 ml-2">
+                          (Estimado: {selectedServiceData.duration})
+                        </span>
+                      )}
                     </label>
                     <select
                       name="timeline"
@@ -705,7 +862,6 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Subject */}
                 <div>
                   <label
                     htmlFor="subject"
@@ -738,7 +894,6 @@ const Contact: React.FC = () => {
                   )}
                 </div>
 
-                {/* Message */}
                 <div>
                   <label
                     htmlFor="message"
@@ -771,7 +926,6 @@ const Contact: React.FC = () => {
                   )}
                 </div>
 
-                {/* Captcha */}
                 <div>
                   <label
                     htmlFor="captcha"
@@ -823,7 +977,6 @@ const Contact: React.FC = () => {
                   )}
                 </div>
 
-                {/* Submit Button */}
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
@@ -846,30 +999,47 @@ const Contact: React.FC = () => {
                         }}
                         className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                       />
-                      <span>{t("contact.form.sending")}</span>
+                      <span>Enviando mensaje...</span>
                     </>
                   ) : (
                     <>
                       <HiMail className="w-5 h-5" />
                       <span>
                         {selectedServiceData
-                          ? `Solicitar ${selectedServiceData.title}`
-                          : t("contact.form.submit")}
+                          ? `Solicitar cotización • ${selectedServiceData.totalPrice}`
+                          : "Enviar mensaje"}
                       </span>
                     </>
                   )}
                 </motion.button>
 
-                {/* Error Message */}
                 {submitError && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
                   >
-                    <div className="flex items-center space-x-2 text-red-800 dark:text-red-200">
-                      <HiExclamationCircle className="w-5 h-5" />
-                      <span className="text-sm">{submitError}</span>
+                    <div className="flex items-start space-x-2 text-red-800 dark:text-red-200">
+                      <HiExclamationCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm mb-2">
+                          Error al enviar mensaje
+                        </div>
+                        <div className="text-sm whitespace-pre-line leading-relaxed">
+                          {submitError}
+                        </div>
+                        {submitError.includes("matquadev@gmail.com") && (
+                          <motion.a
+                            href="mailto:matquadev@gmail.com"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="inline-flex items-center mt-3 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+                          >
+                            <HiMail className="w-4 h-4 mr-2" />
+                            Abrir correo electrónico
+                          </motion.a>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -878,7 +1048,6 @@ const Contact: React.FC = () => {
           </div>
         </div>
 
-        {/* Success Message */}
         <AnimatePresence>
           {showSuccess && (
             <motion.div
