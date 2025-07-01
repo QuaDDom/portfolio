@@ -40,7 +40,7 @@ const projectsData: Project[] = [
     category: "web",
     featured: true,
     status: "completed",
-    year: "2024",
+    year: "2025",
   },
   {
     id: 2,
@@ -55,7 +55,7 @@ const projectsData: Project[] = [
     category: "mobile",
     featured: true,
     status: "completed",
-    year: "2024",
+    year: "2025",
   },
   {
     id: 3,
@@ -115,7 +115,7 @@ const projectsData: Project[] = [
     category: "web",
     featured: true,
     status: "in-progress",
-    year: "2024",
+    year: "2025",
   },
 ];
 
