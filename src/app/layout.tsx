@@ -3,6 +3,7 @@ import "./globals.css";
 import Footer from "../components/layout/Footer";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { LanguageProvider } from "../contexts/LanguageContext";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "Mateo Quadrelli - Full Stack Developer | Desarrollador Web Argentina",
@@ -49,6 +50,15 @@ export const metadata = {
       "en-US": "https://mateoquadrelli.com/en",
     },
   },
+  metadataBase: new URL("https://mateoquadrelli.com"),
+  category: "technology",
+  classification: "business",
+  referrer: "origin-when-cross-origin",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
 };
 
 export default function RootLayout({
@@ -59,6 +69,33 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <meta charSet="utf-8" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+
+        {/* Preload critical resources */}
+        <link
+          rel="preload"
+          href="/fonts/inter-var.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/fira-code-var.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+
+        {/* DNS prefetch for external domains */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="//vercel.com" />
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -96,6 +133,10 @@ export default function RootLayout({
                 "Full Stack Development",
                 "UX/UI Design",
                 "Web Development",
+                "Next.js",
+                "Tailwind CSS",
+                "MongoDB",
+                "PostgreSQL",
               ],
               worksFor: {
                 "@type": "Organization",
@@ -106,6 +147,47 @@ export default function RootLayout({
                 addressCountry: "AR",
                 addressLocality: "Argentina",
               },
+              alumniOf: {
+                "@type": "Organization",
+                name: "Universidad Tecnológica",
+              },
+              hasOccupation: {
+                "@type": "Occupation",
+                name: "Full Stack Developer",
+                occupationLocation: {
+                  "@type": "Country",
+                  name: "Argentina",
+                },
+                skills: [
+                  "React",
+                  "Node.js",
+                  "TypeScript",
+                  "JavaScript",
+                  "UX/UI Design",
+                ],
+              },
+            }),
+          }}
+        />
+
+        {/* Website structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Mateo Quadrelli Portfolio",
+              url: "https://mateoquadrelli.com",
+              description:
+                "Portfolio profesional de Mateo Quadrelli - Desarrollador Full Stack",
+              author: {
+                "@type": "Person",
+                name: "Mateo Quadrelli",
+              },
+              inLanguage: ["es-AR", "en-US"],
+              copyrightYear: new Date().getFullYear(),
+              genre: "Portfolio",
             }),
           }}
         />
@@ -114,9 +196,20 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="theme-color" content="#3b82f6" />
         <meta name="msapplication-TileColor" content="#3b82f6" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Mateo Quadrelli" />
+
+        {/* Favicons and icons */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
+
+        {/* Additional social media meta tags */}
+        <meta property="fb:app_id" content="your-facebook-app-id" />
+        <meta name="twitter:site" content="@mateoquadrelli" />
+        <meta name="linkedin:owner" content="mateoquadrelli" />
 
         <script
           dangerouslySetInnerHTML={{
@@ -150,6 +243,7 @@ export default function RootLayout({
               {children}
               <Footer />
             </div>
+            <Analytics />
           </LanguageProvider>
         </ThemeProvider>
       </body>
