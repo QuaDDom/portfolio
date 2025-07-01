@@ -1,34 +1,415 @@
 @import "tailwindcss";
 
+/* Modern Typography Stack 2025 - Complete Font Collection */
+@import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+/* Preload Critical Fonts for Better Performance */
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2")
+    format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* CSS Variables for Dynamic Typography */
+:root {
+  /* Primary Font Stack - Body Text */
+  --font-primary: "Inter", "DM Sans", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Helvetica Neue",
+    sans-serif;
+
+  /* Display/Heading Font Stack - Large Headlines */
+  --font-display: "Plus Jakarta Sans", "Outfit", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+
+  /* Technical/Accent Font Stack - Modern Geometric */
+  --font-technical: "Space Grotesk", "DM Sans", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+
+  /* Monospace Font Stack - Code and Technical */
+  --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", "Monaco", "Inconsolata",
+    "Roboto Mono", "Consolas", "Liberation Mono", "Menlo", "Courier New",
+    monospace;
+
+  /* Alternative Font Stack for Better Browser Support */
+  --font-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Helvetica Neue", Arial, sans-serif;
+
+  /* Font Feature Settings for Better Rendering */
+  --font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss02";
+  --font-variant-numeric: tabular-nums;
+  --font-variant-ligatures: common-ligatures contextual;
+}
+
+/* Enhanced Smooth Scrolling with Reduced Motion Support */
 html {
   scroll-behavior: smooth;
+  font-feature-settings: var(--font-feature-settings);
+  font-variant-ligatures: var(--font-variant-ligatures);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Primary Body Text - Modern and Clean */
 body {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-primary);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+  font-variant-numeric: var(--font-variant-numeric);
+  font-optical-sizing: auto;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
+/* Display Typography - Bold and Impactful */
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-feature-settings: var(--font-feature-settings);
+  font-optical-sizing: auto;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.022em;
+  font-feature-settings: var(--font-feature-settings);
+  font-optical-sizing: auto;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.019em;
+  font-optical-sizing: auto;
+}
+
+h4 {
+  font-family: var(--font-technical);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.016em;
+}
+
+h5 {
+  font-family: var(--font-technical);
+  font-weight: 550;
+  line-height: 1.35;
+  letter-spacing: -0.013em;
+}
+
 h6 {
-  font-family: "Fira Code", monospace;
+  font-family: var(--font-technical);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
 }
 
+/* Code and Technical Elements */
+code,
+pre,
+.font-mono,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-feature-settings: "liga" 0, "calt" 0, "zero" 1;
+  line-height: 1.5;
+  font-variant-ligatures: none;
+}
+
+/* Enhanced Component Styles */
 .language-selector {
-  @apply flex gap-1 rounded-lg bg-gray-100 dark:bg-gray-800 p-1;
+  @apply flex gap-1 rounded-xl bg-gray-100/80 dark:bg-gray-800/80 p-1.5 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50;
+  font-family: var(--font-technical);
+  font-feature-settings: "ss01", "ss02";
 }
 
 .language-button {
-  @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-blue-500 hover:text-white transition-all duration-200;
+  @apply px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-blue-500 hover:text-white transition-all duration-300 ease-out;
+  font-family: var(--font-technical);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01";
 }
 
 .language-button.active {
-  @apply bg-blue-500 text-white;
+  @apply bg-blue-500 text-white shadow-lg;
+  font-weight: 600;
 }
 
 .theme-toggle-button {
-  @apply p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200;
+  @apply p-3 rounded-xl border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 ease-out backdrop-blur-sm;
+  font-family: var(--font-technical);
+}
+
+/* Performance Optimizations */
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+.font-technical {
+  font-family: var(--font-technical);
+}
+
+.font-primary {
+  font-family: var(--font-primary);
+  font-optical-sizing: auto;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "liga" 0, "calt" 0, "zero" 1;
+}
+
+/* Typography Utilities for Different Contexts */
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-optical-sizing: auto;
+}
+
+.text-hero {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-feature-settings: var(--font-feature-settings);
+  font-optical-sizing: auto;
+}
+
+.text-subheading {
+  font-family: var(--font-technical);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+}
+
+.text-body-large {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.008em;
+  font-optical-sizing: auto;
+}
+
+.text-caption {
+  font-family: var(--font-technical);
+  font-weight: 450;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+}
+
+.text-code {
+  font-family: var(--font-mono);
+  font-feature-settings: "liga" 0, "calt" 0, "zero" 1;
+  font-variant-ligatures: none;
+}
+
+/* Enhanced Focus States with Modern Typography */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Improved Selection Colors */
+::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Dark Mode Typography Adjustments */
+@media (prefers-color-scheme: dark) {
+  body {
+    font-weight: 350; /* Slightly lighter in dark mode for better readability */
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: 0.005em; /* Slightly more spacing in dark mode */
+  }
+}
+
+/* Responsive Typography Scaling */
+@media (max-width: 640px) {
+  body {
+    font-size: 15px; /* Slightly larger base font for mobile */
+    line-height: 1.65;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.015em; /* Reduced letter spacing on mobile */
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+/* Desktop Optimizations */
+@media (min-width: 1025px) {
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-optical-sizing: auto;
+  }
+}
+
+/* High DPI Display Optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body {
+    font-weight: 380; /* Slightly bolder on high DPI displays */
+  }
+
+  code,
+  pre,
+  .font-mono {
+    font-weight: 420;
+  }
+}
+
+/* Ultra High DPI (Retina+) */
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  body {
+    font-weight: 390;
+  }
+}
+
+/* Animation Performance Optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Font Loading Strategy */
+@media (prefers-reduced-data: reduce) {
+  * {
+    font-family: var(--font-fallback) !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  * {
+    font-family: var(--font-primary) !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display) !important;
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+
+  code,
+  pre {
+    font-family: var(--font-mono) !important;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-contrast: high) {
+  body {
+    font-weight: 500;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+  }
+}
+
+/* Font Face Fallbacks for Better Loading */
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: local("Inter"), local("system-ui"), local("-apple-system");
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 107%;
+}
+
+/* Critical Font Loading */
+.font-loading {
+  font-family: var(--font-fallback);
+  visibility: hidden;
+}
+
+.fonts-loaded .font-loading {
+  font-family: var(--font-primary);
+  visibility: visible;
 }
