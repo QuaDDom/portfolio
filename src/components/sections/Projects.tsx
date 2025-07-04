@@ -18,6 +18,18 @@ interface Project {
   featured?: boolean;
   status?: "completed" | "in-progress" | "planned";
   year?: string;
+  duration?: string;
+  client?: string;
+  results?: {
+    performance?: string;
+    conversion?: string;
+    traffic?: string;
+  };
+  testimonial?: {
+    text: string;
+    author: string;
+    rating: number;
+  };
 }
 
 const projectsData: Project[] = [
@@ -40,7 +52,19 @@ const projectsData: Project[] = [
     category: "web",
     featured: true,
     status: "completed",
-    year: "2025",
+    year: "2024",
+    duration: "6 semanas",
+    client: "StartupTech Inc.",
+    results: {
+      performance: "+40% velocidad",
+      conversion: "+25% conversiones",
+      traffic: "+60% tráfico orgánico",
+    },
+    testimonial: {
+      text: "Mateo transformó completamente nuestra presencia digital. Increíble trabajo.",
+      author: "Ana García, CEO StartupTech",
+      rating: 5,
+    },
   },
   {
     id: 2,
@@ -625,6 +649,64 @@ const Projects: React.FC = () => {
                       ))}
                     </div>
                   </motion.div>
+
+                  {/* Métricas de resultados */}
+                  {selectedProject.results && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="mb-6 sm:mb-8"
+                    >
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+                        Resultados Alcanzados
+                      </h4>
+                      <div className="grid grid-cols-3 gap-4">
+                        {Object.entries(selectedProject.results).map(
+                          ([key, value], index) => (
+                            <div
+                              key={key}
+                              className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl"
+                            >
+                              <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                                {value}
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400 capitalize">
+                                {key}
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Testimonial */}
+                  {selectedProject.testimonial && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="mb-6 sm:mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-l-4 border-blue-500"
+                    >
+                      <div className="flex items-center mb-2">
+                        {[...Array(selectedProject.testimonial.rating)].map(
+                          (_, i) => (
+                            <HiStar
+                              key={i}
+                              className="w-4 h-4 text-yellow-500"
+                            />
+                          )
+                        )}
+                      </div>
+                      <p className="text-gray-700 dark:text-gray-300 italic mb-2">
+                        "{selectedProject.testimonial.text}"
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                        — {selectedProject.testimonial.author}
+                      </p>
+                    </motion.div>
+                  )}
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}

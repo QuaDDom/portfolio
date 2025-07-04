@@ -79,9 +79,10 @@ const Contact: React.FC = () => {
     {
       icon: HiMail,
       labelKey: "contact.labels.email",
-      value: "matquadev@gmail.com",
-      href: "mailto:matquadev@gmail.com",
+      value: "mateo@mateoquadrelli.com",
+      href: "mailto:mateo@mateoquadrelli.com",
       color: "from-blue-500 to-blue-600",
+      subtitle: "Respuesta en menos de 2 horas",
     },
     {
       icon: HiPhone,
@@ -89,20 +90,66 @@ const Contact: React.FC = () => {
       value: "+54 9 3571 357410",
       href: "tel:+5493571357410",
       color: "from-green-500 to-green-600",
+      subtitle: "WhatsApp disponible 24/7",
     },
     {
       icon: HiLocationMarker,
       labelKey: "contact.labels.location",
-      value: "Córdoba, Argentina",
+      value: "Córdoba, Argentina (UTC-3)",
       href: "#",
       color: "from-purple-500 to-purple-600",
+      subtitle: "Trabajando globalmente",
     },
     {
       icon: HiClock,
       labelKey: "contact.labels.schedule",
       valueKey: "contact.values.schedule",
+      value: "Lun-Vie 9:00-18:00",
       href: "#",
       color: "from-orange-500 to-orange-600",
+      subtitle: "Urgencias atendidas 24/7",
+    },
+  ];
+
+  const workProcess = [
+    {
+      step: "1",
+      title: "Consulta Inicial Gratuita",
+      description: "Conversamos sobre tu proyecto y necesidades específicas",
+      duration: "30 min",
+    },
+    {
+      step: "2",
+      title: "Propuesta Personalizada",
+      description: "Recibe una cotización detallada en menos de 24 horas",
+      duration: "1 día",
+    },
+    {
+      step: "3",
+      title: "Desarrollo Ágil",
+      description: "Desarrollo con actualizaciones diarias de progreso",
+      duration: "1-8 semanas",
+    },
+    {
+      step: "4",
+      title: "Lanzamiento & Soporte",
+      description: "Entrega final con soporte continuo incluido",
+      duration: "Ongoing",
+    },
+  ];
+
+  const testimonials = [
+    {
+      text: "Mateo superó todas nuestras expectativas. Profesional excepcional.",
+      author: "Carlos Rivera",
+      company: "TechCorp",
+      rating: 5,
+    },
+    {
+      text: "Calidad increíble y entrega siempre a tiempo. Altamente recomendado.",
+      author: "María González",
+      company: "Startup Digital",
+      rating: 5,
     },
   ];
 
@@ -570,6 +617,11 @@ const Contact: React.FC = () => {
                           <div className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">
                             {item.value || t(item.valueKey || "")}
                           </div>
+                          {item.subtitle && (
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {item.subtitle}
+                            </div>
+                          )}
                         </div>
                       </motion.a>
                     );

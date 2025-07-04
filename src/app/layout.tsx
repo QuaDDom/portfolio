@@ -173,10 +173,6 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
 
         {/* Optimized Favicons */}
         <link rel="icon" href="/favicon.ico" sizes="48x48" />
