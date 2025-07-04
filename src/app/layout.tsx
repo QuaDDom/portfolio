@@ -511,8 +511,6 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "ProfilePage",
-              dateCreated: "2025-01-01",
-              dateModified: currentDate,
               mainEntity: {
                 "@type": "Person",
                 name: "Mateo Quadrelli",
@@ -552,52 +550,6 @@ export default function RootLayout({
                 "https://twitter.com/mateoquadrelli",
               ],
             }),
-          }}
-        />
-
-        {/* Review Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                "@context": "https://schema.org",
-                "@type": "Review",
-                itemReviewed: {
-                  "@type": "Person",
-                  name: "Mateo Quadrelli",
-                },
-                reviewRating: {
-                  "@type": "Rating",
-                  ratingValue: "5",
-                  bestRating: "5",
-                },
-                author: {
-                  "@type": "Person",
-                  name: "Cliente Satisfecho",
-                },
-                reviewBody:
-                  "Mateo desarrolló una aplicación web increíble para mi negocio. ¡Altamente recomendado!",
-              },
-              {
-                "@type": "Review",
-                itemReviewed: {
-                  "@type": "Person",
-                  name: "Mateo Quadrelli",
-                },
-                reviewRating: {
-                  "@type": "Rating",
-                  ratingValue: "5",
-                  bestRating: "5",
-                },
-                author: {
-                  "@type": "Person",
-                  name: "Empresa XYZ",
-                },
-                reviewBody:
-                  "El diseño UX/UI y la optimización SEO de Mateo aumentaron nuestras conversiones en un 30%.",
-              },
-            ]),
           }}
         />
 

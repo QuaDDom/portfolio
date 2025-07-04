@@ -1022,14 +1022,14 @@ const Contact: React.FC = () => {
           </div>
         </div>
 
-        {/* Success Message - Fixed positioning and mobile optimized */}
+        {/* Success Message - Fixed positioning at bottom right */}
         <AnimatePresence>
           {showSuccess && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 50 }}
-              className="fixed top-4 sm:top-6 lg:top-8 right-4 sm:right-6 lg:right-8 z-50 max-w-xs sm:max-w-sm"
+              className="fixed bottom-4 sm:bottom-6 lg:bottom-8 right-4 sm:right-6 lg:right-8 z-50 max-w-xs sm:max-w-sm"
             >
               <div className="bg-green-500 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl shadow-2xl flex items-center space-x-2 sm:space-x-3">
                 <HiCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
