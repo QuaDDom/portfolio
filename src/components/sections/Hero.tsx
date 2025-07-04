@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   motion,
   useAnimation,
@@ -13,6 +19,25 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { useLanguage } from "../../contexts/LanguageContext";
+
+// Types
+interface CodeSnippet {
+  lines: string[];
+  theme: string;
+}
+
+interface StatItem {
+  number: string;
+  label: string;
+  color: string;
+}
+
+interface FloatingIcon {
+  icon: string;
+  position: string;
+  delay: number;
+  color: string;
+}
 
 const Hero: React.FC = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -28,71 +53,150 @@ const Hero: React.FC = () => {
   const controls = useAnimation();
   const { t } = useLanguage();
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 300], [0, 75]);
   const shouldReduceMotion = useReducedMotion();
 
-  // Smooth mouse tracking with spring
+  // Optimized transforms con mejor performance
+  const y = useTransform(scrollY, [0, 400], [0, 100]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0.8]);
+
+  // Smooth mouse tracking with spring - configuración optimizada
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springConfig = { damping: 25, stiffness: 700 };
+  const springConfig = useMemo(
+    () => ({ damping: 30, stiffness: 400, mass: 0.8 }),
+    []
+  );
   const mouseXSpring = useSpring(mouseX, springConfig);
   const mouseYSpring = useSpring(mouseY, springConfig);
 
-  // Code snippets for rotation
-  const codeSnippets = [
-    {
-      lines: [
-        "const developer = {",
-        "  name: 'Mateo Quadrelli',",
-        "  skills: ['React', 'Node.js'],",
-        "  passion: 'Innovation',",
-        "  buildAmazing: () => true",
-        "};",
-        "// Creating digital magic...",
-        "export default developer;",
-      ],
-      theme: "blue",
-    },
-    {
-      lines: [
-        "class Designer {",
-        "  constructor() {",
-        "    this.creativity = Infinity;",
-        "    this.vision = 'pixel-perfect';",
-        "  }",
-        "  design() { return 'beauty'; }",
-        "}",
-        "// Crafting experiences...",
-      ],
-      theme: "purple",
-    },
-    {
-      lines: [
-        "function buildTheFuture() {",
-        "  const ideas = getIdeas();",
-        "  const code = transform(ideas);",
-        "  const magic = deploy(code);",
-        "  return magic;",
-        "}",
-        "// Building tomorrow today...",
-        "buildTheFuture();",
-      ],
-      theme: "green",
-    },
-  ];
+  const codeSnippets: CodeSnippet[] = useMemo(
+    () => [
+      {
+        lines: [
+          "const developer = {",
+          "  name: 'Mateo Quadrelli',",
+          "  skills: ['React', 'TypeScript', 'Node.js'],",
+          "  passion: 'Innovation & Excellence',",
+          "  experience: '3+ years',",
+          "  buildAmazing: () => true",
+          "};",
+          "// Creating digital experiences...",
+          "export default developer;",
+        ],
+        theme: "blue",
+      },
+      {
+        lines: [
+          "class CreativeDesigner {",
+          "  constructor() {",
+          "    this.creativity = Infinity;",
+          "    this.vision = 'pixel-perfect';",
+          "    this.userFocus = true;",
+          "  }",
+          "  ",
+          "  design() { return 'beauty'; }",
+          "  innovate() { return 'tomorrow'; }",
+          "}",
+          "// Crafting user experiences...",
+        ],
+        theme: "purple",
+      },
+      {
+        lines: [
+          "async function buildTheFuture() {",
+          "  const ideas = await getIdeas();",
+          "  const solution = transform(ideas);",
+          "  const impact = await deploy(solution);",
+          "  ",
+          "  return {",
+          "    success: true,",
+          "    impact: 'game-changing'",
+          "  };",
+          "}",
+          "// Building tomorrow, today...",
+        ],
+        theme: "green",
+      },
+    ],
+    []
+  );
+
+  const floatingIcons: FloatingIcon[] = useMemo(
+    () => [
+      {
+        icon: "⚛️",
+        position: "-top-2 right-4 sm:right-6 lg:right-8",
+        delay: 0,
+        color: "from-blue-500 to-cyan-500",
+      },
+      {
+        icon: "🚀",
+        position: "top-4 sm:top-6 lg:top-8 -right-2",
+        delay: 0.5,
+        color: "from-purple-500 to-pink-500",
+      },
+      {
+        icon: "💻",
+        position: "bottom-4 sm:bottom-6 lg:bottom-8 -left-2",
+        delay: 1,
+        color: "from-green-500 to-emerald-500",
+      },
+      {
+        icon: "🎨",
+        position: "-bottom-2 left-4 sm:left-6 lg:left-8",
+        delay: 1.5,
+        color: "from-orange-500 to-red-500",
+      },
+      {
+        icon: "⚡",
+        position: "top-1/2 -left-3 sm:-left-4 lg:-left-6",
+        delay: 2,
+        color: "from-yellow-500 to-orange-500",
+      },
+      {
+        icon: "🔥",
+        position: "top-1/2 -right-3 sm:-right-4 lg:-right-6",
+        delay: 2.5,
+        color: "from-red-500 to-pink-500",
+      },
+    ],
+    []
+  );
+
+  const statsData: StatItem[] = useMemo(
+    () => [
+      {
+        number: "50+",
+        label: t("hero.stats.projects") || "Proyectos",
+        color: "from-blue-500 to-cyan-500",
+      },
+      {
+        number: "3+",
+        label: t("hero.stats.experience") || "Años exp.",
+        color: "from-purple-500 to-pink-500",
+      },
+      {
+        number: "100%",
+        label: t("hero.stats.satisfaction") || "Satisfacción",
+        color: "from-green-500 to-emerald-500",
+      },
+    ],
+    [t]
+  );
 
   const [roles, setRoles] = useState<string[]>([]);
 
   useEffect(() => {
-    setRoles([
+    const newRoles = [
       t("hero.roles.fullstack"),
       t("hero.roles.designer"),
       t("hero.roles.creator"),
       t("hero.roles.innovator"),
-    ]);
+    ];
+    setRoles(newRoles);
   }, [t]);
 
-  // Enhanced mouse tracking with performance optimization
+  // Optimized mouse tracking con mejor throttling
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (shouldReduceMotion) return;
@@ -101,24 +205,43 @@ const Hero: React.FC = () => {
       if (rect) {
         const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
         const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-        mouseX.set(x * 12);
-        mouseY.set(y * 12);
-        setMousePosition({ x: x * 12, y: y * 12 });
+        const dampedX = x * 6;
+        const dampedY = y * 6;
+
+        mouseX.set(dampedX);
+        mouseY.set(dampedY);
+        setMousePosition({ x: dampedX, y: dampedY });
       }
     },
     [mouseX, mouseY, shouldReduceMotion]
   );
 
+  // Optimized mouse event con mejor throttling
   useEffect(() => {
+    const heroElement = heroRef.current;
+    if (!heroElement || shouldReduceMotion) return;
+
+    let rafId: number;
+    let lastTime = 0;
+    const throttleMs = 16; // ~60fps
+
     const throttledMouseMove = (e: MouseEvent) => {
-      requestAnimationFrame(() => handleMouseMove(e));
+      const now = performance.now();
+      if (now - lastTime >= throttleMs) {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => handleMouseMove(e));
+        lastTime = now;
+      }
     };
 
-    if (heroRef.current && !shouldReduceMotion) {
-      heroRef.current.addEventListener("mousemove", throttledMouseMove);
-      return () =>
-        heroRef.current?.removeEventListener("mousemove", throttledMouseMove);
-    }
+    heroElement.addEventListener("mousemove", throttledMouseMove, {
+      passive: true,
+    });
+
+    return () => {
+      heroElement.removeEventListener("mousemove", throttledMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [handleMouseMove, shouldReduceMotion]);
 
   useEffect(() => {
@@ -127,25 +250,29 @@ const Hero: React.FC = () => {
     }
   }, [isInView, controls]);
 
-  // Enhanced typewriter effect with performance optimization
+  // Optimized typewriter effect con mejor timing
   useEffect(() => {
     if (roles.length === 0) return;
 
     const currentText = roles[currentRole] || "";
     let timeoutId: NodeJS.Timeout;
 
+    const typeSpeed = 60 + Math.random() * 30;
+    const deleteSpeed = 30;
+    const pauseTime = 1800;
+
     if (!isDeleting && displayText.length < currentText.length) {
       timeoutId = setTimeout(() => {
         setDisplayText(currentText.slice(0, displayText.length + 1));
-      }, 60 + Math.random() * 60);
+      }, typeSpeed);
     } else if (!isDeleting && displayText.length === currentText.length) {
       timeoutId = setTimeout(() => {
         setIsDeleting(true);
-      }, 2500);
+      }, pauseTime);
     } else if (isDeleting && displayText.length > 0) {
       timeoutId = setTimeout(() => {
         setDisplayText(currentText.slice(0, displayText.length - 1));
-      }, 30);
+      }, deleteSpeed);
     } else if (isDeleting && displayText.length === 0) {
       setIsDeleting(false);
       setCurrentRole((prev) => (prev + 1) % roles.length);
@@ -154,46 +281,55 @@ const Hero: React.FC = () => {
     return () => clearTimeout(timeoutId);
   }, [displayText, isDeleting, currentRole, roles]);
 
-  // Auto-rotate code snippets with performance optimization
+  // Optimized code rotation con mejor timing
   useEffect(() => {
     if (!isCodeHovered && !shouldReduceMotion) {
       const interval = setInterval(() => {
         setCurrentCodeIndex((prev) => (prev + 1) % codeSnippets.length);
-      }, 8000);
+      }, 4500);
       return () => clearInterval(interval);
     }
   }, [isCodeHovered, codeSnippets.length, shouldReduceMotion]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.3,
-        staggerChildren: 0.15,
+  // Memoized animation variants optimizados
+  const containerVariants = useMemo(
+    () => ({
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: {
+          delayChildren: 0.2,
+          staggerChildren: 0.1,
+          ease: [0.4, 0, 0.2, 1],
+        },
       },
-    },
-  };
+    }),
+    []
+  );
 
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 12,
+  const itemVariants = useMemo(
+    () => ({
+      hidden: { y: 20, opacity: 0 },
+      visible: {
+        y: 0,
+        opacity: 1,
+        transition: {
+          type: "spring",
+          stiffness: 120,
+          damping: 15,
+          mass: 0.8,
+        },
       },
-    },
-  };
+    }),
+    []
+  );
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  };
+  }, []);
 
   return (
     <section
@@ -201,15 +337,15 @@ const Hero: React.FC = () => {
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 sm:pt-20"
       role="banner"
-      aria-label="Hero section"
+      aria-label={t("hero.ariaLabel") || "Hero section"}
     >
-      {/* Section-specific overlay */}
+      {/* Section-specific overlay - Restored Original */}
       <div
         className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-blue-50/20 dark:from-transparent dark:via-gray-900/10 dark:to-blue-950/20"
         aria-hidden="true"
       />
 
-      {/* Enhanced section-specific background elements */}
+      {/* Enhanced section-specific background elements - Restored Original */}
       <div className="absolute inset-0" aria-hidden="true">
         <motion.div
           className="absolute inset-0 opacity-40"
@@ -262,7 +398,10 @@ const Hero: React.FC = () => {
       </div>
 
       <motion.div
-        style={{ y: shouldReduceMotion ? 0 : y }}
+        style={{
+          y: shouldReduceMotion ? 0 : y,
+          opacity: shouldReduceMotion ? 1 : opacity,
+        }}
         className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
       >
         <motion.div
@@ -278,7 +417,7 @@ const Hero: React.FC = () => {
                 variants={itemVariants}
                 className="space-y-4 sm:space-y-6"
               >
-                {/* Status Badge */}
+                {/* Status Badge - Original Style */}
                 <motion.div
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -395,12 +534,12 @@ const Hero: React.FC = () => {
                           shouldReduceMotion
                             ? {}
                             : {
-                                opacity: [0.2, 1, 0.2],
+                                opacity: [0.3, 1, 0.3],
                                 scaleY: [0.8, 1, 0.8],
                               }
                         }
                         transition={{
-                          duration: 2,
+                          duration: 1.5,
                           repeat: Infinity,
                           ease: [0.4, 0, 0.2, 1],
                           repeatType: "loop",
@@ -426,14 +565,33 @@ const Hero: React.FC = () => {
                   whileHover={{ scale: 1.05, y: -3 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => scrollToSection("projects")}
-                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl shadow-xl overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
+                  className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl shadow-xl overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto hover:shadow-2xl hover:from-blue-700 hover:to-purple-700"
                   aria-label={t("hero.cta.projects")}
                 >
-                  <motion.div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Efecto de brillo sutil en hover */}
+                  <motion.div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  {/* Efecto de partículas en hover */}
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: `radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%)`,
+                    }}
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0, 0.3, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+
                   <span className="relative z-10 flex items-center justify-center space-x-2">
                     <span>{t("hero.cta.projects")}</span>
                     <motion.svg
-                      className="w-4 h-4"
+                      className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
                       animate={shouldReduceMotion ? {} : { x: [0, 4, 0] }}
                       transition={{ duration: 2.5, repeat: Infinity }}
                       fill="none"
@@ -455,7 +613,7 @@ const Hero: React.FC = () => {
                   whileHover={{ scale: 1.05, y: -3 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => scrollToSection("contact")}
-                  className="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 shadow-lg relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
+                  className="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 shadow-lg relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto hover:shadow-xl"
                   aria-label={t("hero.cta.contact")}
                 >
                   <span className="relative z-10">{t("hero.cta.contact")}</span>
@@ -468,23 +626,7 @@ const Hero: React.FC = () => {
                 variants={itemVariants}
                 className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 px-4 sm:px-0"
               >
-                {[
-                  {
-                    number: "50+",
-                    label: "Proyectos",
-                    color: "from-blue-500 to-cyan-500",
-                  },
-                  {
-                    number: "3+",
-                    label: "Años exp.",
-                    color: "from-purple-500 to-pink-500",
-                  },
-                  {
-                    number: "100%",
-                    label: "Satisfacción",
-                    color: "from-green-500 to-emerald-500",
-                  },
-                ].map((stat, index) => (
+                {statsData.map((stat, index) => (
                   <motion.div
                     key={stat.label}
                     initial={{ opacity: 0, y: 20 }}
@@ -618,44 +760,7 @@ const Hero: React.FC = () => {
                   </motion.div>
 
                   {/* Floating Icons - Optimized for smaller screens */}
-                  {[
-                    {
-                      icon: "⚛️",
-                      position: "-top-2 right-6 lg:right-8",
-                      delay: 0,
-                      color: "from-blue-500 to-cyan-500",
-                    },
-                    {
-                      icon: "🚀",
-                      position: "top-6 lg:top-8 -right-2",
-                      delay: 0.5,
-                      color: "from-purple-500 to-pink-500",
-                    },
-                    {
-                      icon: "💻",
-                      position: "bottom-6 lg:bottom-8 -left-2",
-                      delay: 1,
-                      color: "from-green-500 to-emerald-500",
-                    },
-                    {
-                      icon: "🎨",
-                      position: "-bottom-2 left-6 lg:left-8",
-                      delay: 1.5,
-                      color: "from-orange-500 to-red-500",
-                    },
-                    {
-                      icon: "⚡",
-                      position: "top-1/2 -left-4 lg:-left-6",
-                      delay: 2,
-                      color: "from-yellow-500 to-orange-500",
-                    },
-                    {
-                      icon: "🔥",
-                      position: "top-1/2 -right-4 lg:-right-6",
-                      delay: 2.5,
-                      color: "from-red-500 to-pink-500",
-                    },
-                  ].map((item, index) => (
+                  {floatingIcons.map((item, index) => (
                     <motion.div
                       key={index}
                       className={`absolute ${item.position} w-10 h-10 lg:w-14 lg:h-14 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl flex items-center justify-center text-lg lg:text-xl cursor-pointer z-20 overflow-hidden`}
@@ -702,46 +807,46 @@ const Hero: React.FC = () => {
         </motion.div>
       </motion.div>
 
-      {/* Scroll Indicator */}
+      {/* Scroll Indicator con animación optimizada */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 3, duration: 1, ease: "easeOut" }}
+        transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
         className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2"
       >
         <motion.button
-          animate={shouldReduceMotion ? {} : { y: [0, 10, 0] }}
+          animate={shouldReduceMotion ? {} : { y: [0, 8, 0] }}
           transition={{
-            duration: 4,
+            duration: 3,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: [0.4, 0, 0.2, 1],
             repeatType: "loop",
           }}
           className="flex flex-col items-center text-gray-400 dark:text-gray-500 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2"
           onClick={() => scrollToSection("about")}
           whileHover={{
-            scale: 1.1,
-            transition: { duration: 0.3, ease: "easeOut" },
+            scale: 1.05,
+            transition: { duration: 0.2, ease: "easeOut" },
           }}
           aria-label={t("hero.scroll")}
         >
-          <span className="text-xs sm:text-sm mb-2 sm:mb-3 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300 font-medium">
+          <span className="text-xs sm:text-sm mb-2 sm:mb-3 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200 font-medium">
             {t("hero.scroll")}
           </span>
           <motion.div
             className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-gray-300 dark:border-gray-600 rounded-full flex justify-center relative overflow-hidden"
             whileHover={{
               borderColor: "#3b82f6",
-              boxShadow: "0 0 20px rgba(59, 130, 246, 0.3)",
-              transition: { duration: 0.3, ease: "easeOut" },
+              boxShadow: "0 0 15px rgba(59, 130, 246, 0.2)",
+              transition: { duration: 0.2, ease: "easeOut" },
             }}
           >
             <motion.div
-              animate={shouldReduceMotion ? {} : { y: [0, 12, 0] }}
+              animate={shouldReduceMotion ? {} : { y: [0, 10, 0] }}
               transition={{
-                duration: 4,
+                duration: 3,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: [0.4, 0, 0.2, 1],
                 repeatType: "loop",
               }}
               className="w-1 h-2 sm:h-3 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mt-1 sm:mt-2"

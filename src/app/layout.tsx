@@ -97,8 +97,9 @@ export const metadata = {
   alternates: {
     canonical: "https://mateoquadrelli.com",
     languages: {
-      "es-AR": "https://mateoquadrelli.com",
-      "en-US": "https://mateoquadrelli.com/en",
+      es: "https://mateoquadrelli.com",
+      en: "https://mateoquadrelli.com/en",
+      it: "https://mateoquadrelli.com/it",
     },
   },
   metadataBase: new URL("https://mateoquadrelli.com"),
@@ -284,16 +285,17 @@ export default function RootLayout({
         {/* Safari Pinned Tab */}
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#3b82f6" />
 
-        {/* Hreflang for multilingual support */}
-        <link
-          rel="alternate"
-          href="https://mateoquadrelli.com"
-          hrefLang="es-AR"
-        />
+        {/* Enhanced Hreflang for multilingual support */}
+        <link rel="alternate" href="https://mateoquadrelli.com" hrefLang="es" />
         <link
           rel="alternate"
           href="https://mateoquadrelli.com/en"
-          hrefLang="en-US"
+          hrefLang="en"
+        />
+        <link
+          rel="alternate"
+          href="https://mateoquadrelli.com/it"
+          hrefLang="it"
         />
         <link
           rel="alternate"

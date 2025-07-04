@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 interface Language {
   code: string;
@@ -680,27 +681,52 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     languages[0]
   );
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
 
-    // Check localStorage for saved language
-    const savedLanguageCode = localStorage.getItem("language");
-    if (savedLanguageCode) {
-      const savedLanguage = languages.find(
-        (lang) => lang.code === savedLanguageCode
-      );
-      if (savedLanguage) {
-        setCurrentLanguage(savedLanguage);
-      }
+    // Detect language from URL first
+    const currentPath =
+      typeof window !== "undefined" ? window.location.pathname : "";
+    let detectedLang = null;
+
+    if (currentPath.startsWith("/en")) {
+      detectedLang = languages.find((lang) => lang.code === "en");
+    } else if (currentPath.startsWith("/it")) {
+      detectedLang = languages.find((lang) => lang.code === "it");
     } else {
-      // Try to detect browser language
-      const browserLanguage = navigator.language.split("-")[0];
-      const detectedLanguage = languages.find(
-        (lang) => lang.code === browserLanguage
-      );
-      if (detectedLanguage) {
-        setCurrentLanguage(detectedLanguage);
+      detectedLang = languages.find((lang) => lang.code === "es");
+    }
+
+    if (detectedLang) {
+      setCurrentLanguage(detectedLang);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("language", detectedLang.code);
+      }
+      return;
+    }
+
+    // Check localStorage for saved language only if not detected from URL
+    if (typeof window !== "undefined") {
+      const savedLanguageCode = localStorage.getItem("language");
+      if (savedLanguageCode) {
+        const savedLanguage = languages.find(
+          (lang) => lang.code === savedLanguageCode
+        );
+        if (savedLanguage) {
+          setCurrentLanguage(savedLanguage);
+        }
+      } else {
+        // Try to detect browser language
+        const browserLanguage = navigator.language.split("-")[0];
+        const detectedLanguage = languages.find(
+          (lang) => lang.code === browserLanguage
+        );
+        if (detectedLanguage) {
+          setCurrentLanguage(detectedLanguage);
+        }
       }
     }
   }, []);
@@ -709,7 +735,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
 
     setCurrentLanguage(language);
-    localStorage.setItem("language", language.code);
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("language", language.code);
+
+      // NO HACER NAVEGACIÓN AUTOMÁTICA
+      // Solo guardamos el idioma en localStorage y actualizamos el estado
+      // Las rutas /en y /it son solo para SEO, no para navegación en tiempo real
+    }
   };
 
   const t = (key: string): string => {

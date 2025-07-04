@@ -14,6 +14,7 @@ import {
   useMotionValueEvent,
   useReducedMotion,
 } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useLanguage, languages } from "../../contexts/LanguageContext";
 import {
@@ -47,6 +48,7 @@ const Navigation: React.FC = () => {
   const { theme, toggleTheme, mounted } = useTheme();
   const { currentLanguage, setLanguage, t } = useLanguage();
   const { scrollY } = useScroll();
+  const pathname = usePathname();
 
   const navItems = useMemo(
     () => [
@@ -90,14 +92,14 @@ const Navigation: React.FC = () => {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
               setActiveSection(entry.target.id);
             }
           });
         },
         {
-          threshold: [0.3, 0.5, 0.7],
-          rootMargin: "-20% 0px -20% 0px",
+          threshold: [0.1, 0.3, 0.5, 0.7, 0.9],
+          rootMargin: "-10% 0px -10% 0px",
         }
       );
 
@@ -110,26 +112,49 @@ const Navigation: React.FC = () => {
 
       return () => observer.disconnect();
     } else {
-      // Fallback: use a simple scroll-based detection
+      // Fallback optimizado sin usar window directamente
       const checkActiveSection = () => {
+        if (typeof window === "undefined") return;
+
+        const scrollPosition = window.scrollY + 100;
         const currentSection = sections.find((section) => {
           const element = document.getElementById(section);
           if (element) {
-            const rect = element.getBoundingClientRect();
-            return rect.top <= 100 && rect.bottom >= 100;
+            const { offsetTop, offsetHeight } = element;
+            return (
+              scrollPosition >= offsetTop &&
+              scrollPosition < offsetTop + offsetHeight
+            );
           }
           return false;
         });
 
-        if (currentSection) {
+        if (currentSection && currentSection !== activeSection) {
           setActiveSection(currentSection);
         }
       };
 
-      // Initial check
-      checkActiveSection();
+      // Throttled scroll listener usando document
+      let ticking = false;
+      const handleScroll = () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            checkActiveSection();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      };
+
+      // Usar document en lugar de window para evitar errores de tipo
+      if (typeof document !== "undefined") {
+        document.addEventListener("scroll", handleScroll, { passive: true });
+        checkActiveSection(); // Initial check
+
+        return () => document.removeEventListener("scroll", handleScroll);
+      }
     }
-  }, []);
+  }, [activeSection]);
 
   // Handle click outside using React refs only
   useEffect(() => {
@@ -221,7 +246,7 @@ const Navigation: React.FC = () => {
       "services",
       "contact",
     ];
-    const scrollPosition = window.scrollY + 150;
+    const scrollPosition = window.scrollY + 100;
 
     for (const section of sections) {
       const element = document.getElementById(section);
@@ -231,12 +256,14 @@ const Navigation: React.FC = () => {
           scrollPosition >= offsetTop &&
           scrollPosition < offsetTop + offsetHeight
         ) {
-          setActiveSection(section);
+          if (section !== activeSection) {
+            setActiveSection(section);
+          }
           break;
         }
       }
     }
-  }, []);
+  }, [activeSection]);
 
   // Use framer-motion's scroll hook for better performance
   useMotionValueEvent(
@@ -244,7 +271,13 @@ const Navigation: React.FC = () => {
     "change",
     useCallback(
       (latest) => {
-        setIsScrolled(latest > 50);
+        const wasScrolled = isScrolled;
+        const newScrolled = latest > 50;
+
+        if (wasScrolled !== newScrolled) {
+          setIsScrolled(newScrolled);
+        }
+
         setIsScrolling(true);
 
         if (scrollTimeoutRef.current) {
@@ -253,12 +286,12 @@ const Navigation: React.FC = () => {
 
         scrollTimeoutRef.current = setTimeout(() => {
           setIsScrolling(false);
-        }, 150);
+        }, 100);
 
-        // Update active section based on scroll position
+        // Throttled section update
         handleSectionUpdate();
       },
-      [handleSectionUpdate]
+      [handleSectionUpdate, isScrolled]
     )
   );
 
@@ -317,6 +350,7 @@ const Navigation: React.FC = () => {
         e.stopPropagation();
       }
       try {
+        // Solo cambiar el idioma sin navegación
         setLanguage(lang);
         setLanguageOpen(false);
         setMobileLanguageOpen(false);
@@ -349,6 +383,7 @@ const Navigation: React.FC = () => {
       className="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 w-[93%] max-w-5xl"
       role="navigation"
       aria-label="Main navigation"
+      suppressHydrationWarning
     >
       <div className="relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border border-gray-200/30 dark:border-gray-700/30 shadow-lg">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -383,6 +418,7 @@ const Navigation: React.FC = () => {
         }`}
         role="navigation"
         aria-label="Main navigation"
+        suppressHydrationWarning
       >
         <motion.div
           className={`relative rounded-2xl transition-all duration-500 ${
@@ -446,8 +482,9 @@ const Navigation: React.FC = () => {
                             className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl"
                             transition={{
                               type: "spring",
-                              bounce: 0.2,
-                              duration: 0.6,
+                              bounce: 0.15,
+                              duration: 0.4,
+                              ease: [0.4, 0, 0.2, 1],
                             }}
                           />
                         )}
@@ -533,7 +570,11 @@ const Navigation: React.FC = () => {
                             whileHover={{
                               backgroundColor: "rgba(156, 163, 175, 0.1)",
                             }}
-                            onClick={() => handleLanguageSelect(lang)}
+                            onClick={(e: any) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleLanguageSelect(lang, e);
+                            }}
                             className={`w-full px-3 py-2 text-left text-sm transition-colors duration-200 flex items-center space-x-2 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 ${
                               currentLanguage?.code === lang.code
                                 ? "text-blue-600 dark:text-blue-400"
@@ -593,7 +634,11 @@ const Navigation: React.FC = () => {
                             whileHover={{
                               backgroundColor: "rgba(156, 163, 175, 0.1)",
                             }}
-                            onClick={() => handleLanguageSelect(lang)}
+                            onClick={(e: any) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleLanguageSelect(lang, e);
+                            }}
                             className={`w-full px-2 py-1.5 text-left transition-colors duration-200 flex items-center space-x-1.5 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 ${
                               currentLanguage?.code === lang.code
                                 ? "text-blue-600 dark:text-blue-400"

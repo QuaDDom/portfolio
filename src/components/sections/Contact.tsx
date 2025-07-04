@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../../contexts/LanguageContext";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
   HiMail,
   HiPhone,
@@ -15,6 +16,7 @@ import {
   HiTag,
   HiPlus,
   HiCalculator,
+  HiShieldCheck,
 } from "react-icons/hi";
 import { SiGithub, SiLinkedin, SiX, SiInstagram } from "react-icons/si";
 
@@ -36,11 +38,6 @@ interface FormErrors {
   captcha?: string;
 }
 
-interface Captcha {
-  question: string;
-  answer: number;
-}
-
 interface ServiceData {
   id: string;
   title: string;
@@ -58,6 +55,7 @@ interface ServiceData {
 
 const Contact: React.FC = () => {
   const { t } = useLanguage();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -71,8 +69,7 @@ const Contact: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [captcha, setCaptcha] = useState<Captcha>({ question: "", answer: 0 });
-  const [captchaInput, setCaptchaInput] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedServiceData, setSelectedServiceData] =
     useState<ServiceData | null>(null);
@@ -155,45 +152,6 @@ const Contact: React.FC = () => {
       color: "hover:text-pink-500",
     },
   ];
-
-  const generateCaptcha = () => {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const operators = ["+", "-", "*"];
-    const operator = operators[Math.floor(Math.random() * operators.length)];
-
-    let answer: number;
-    let question: string;
-
-    switch (operator) {
-      case "+":
-        answer = num1 + num2;
-        question = `${num1} + ${num2}`;
-        break;
-      case "-":
-        const larger = Math.max(num1, num2);
-        const smaller = Math.min(num1, num2);
-        answer = larger - smaller;
-        question = `${larger} - ${smaller}`;
-        break;
-      case "*":
-        const smallNum1 = Math.floor(Math.random() * 5) + 1;
-        const smallNum2 = Math.floor(Math.random() * 5) + 1;
-        answer = smallNum1 * smallNum2;
-        question = `${smallNum1} × ${smallNum2}`;
-        break;
-      default:
-        answer = num1 + num2;
-        question = `${num1} + ${num2}`;
-    }
-
-    setCaptcha({ question, answer });
-    setCaptchaInput("");
-  };
-
-  useEffect(() => {
-    generateCaptcha();
-  }, []);
 
   const generateEnhancedServiceMessage = (serviceData: ServiceData) => {
     let message = `¡Hola! Estoy interesado en solicitar una cotización para el servicio "${serviceData.title}".
@@ -369,6 +327,21 @@ const Contact: React.FC = () => {
     }));
   };
 
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
+    if (token && errors.captcha) {
+      setErrors({ ...errors, captcha: undefined });
+    }
+  };
+
+  const handleCaptchaExpired = () => {
+    setCaptchaToken(null);
+    setErrors({
+      ...errors,
+      captcha: "El captcha ha expirado. Por favor, verifica nuevamente.",
+    });
+  };
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -380,10 +353,8 @@ const Contact: React.FC = () => {
     }
     if (!formData.subject.trim()) newErrors.subject = "El asunto es requerido";
     if (!formData.message.trim()) newErrors.message = "El mensaje es requerido";
-    if (!captchaInput.trim()) {
-      newErrors.captcha = "Por favor, resuelve la operación matemática";
-    } else if (parseInt(captchaInput) !== captcha.answer) {
-      newErrors.captcha = "Respuesta incorrecta";
+    if (!captchaToken) {
+      newErrors.captcha = "Por favor, verifica que no eres un robot";
     }
 
     setErrors(newErrors);
@@ -441,6 +412,7 @@ const Contact: React.FC = () => {
         client_type: selectedServiceData
           ? "Cotización de Servicio"
           : "Consulta General",
+        recaptcha_token: captchaToken,
       };
 
       console.log("Sending email via API...");
@@ -477,8 +449,8 @@ const Contact: React.FC = () => {
           serviceType: "",
         });
         setSelectedServiceData(null);
-        setCaptchaInput("");
-        generateCaptcha();
+        setCaptchaToken(null);
+        recaptchaRef.current?.reset();
 
         setTimeout(() => setShowSuccess(false), 5000);
       } else {
@@ -493,7 +465,6 @@ const Contact: React.FC = () => {
         errorMessage += `${error.message} `;
       }
 
-      // Check if it's an authentication error that provides fallback
       if (
         error.message?.includes("App Password") ||
         error.message?.includes("credenciales")
@@ -515,6 +486,10 @@ const Contact: React.FC = () => {
       }
 
       setSubmitError(errorMessage);
+
+      // Reset reCAPTCHA on error
+      recaptchaRef.current?.reset();
+      setCaptchaToken(null);
 
       console.error("Detailed error:", {
         error: error,
@@ -939,56 +914,39 @@ const Contact: React.FC = () => {
                   )}
                 </div>
 
-                {/* Captcha - mobile optimized */}
+                {/* Google reCAPTCHA - mobile optimized */}
                 <div>
-                  <label
-                    htmlFor="captcha"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    {t("contact.form.captcha")} *
-                  </label>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <div className="flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 dark:bg-gray-700 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-600 w-full sm:w-auto">
-                      <span className="text-base sm:text-lg font-mono text-gray-900 dark:text-white">
-                        {captcha.question} = ?
-                      </span>
-                      <motion.button
-                        type="button"
-                        onClick={generateCaptcha}
-                        whileHover={{ scale: 1.1, rotate: 180 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="p-1 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      >
-                        <HiRefresh className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </motion.button>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <div className="flex items-center space-x-2">
+                      <HiShieldCheck className="w-4 h-4 text-green-500" />
+                      <span>Verificación de seguridad *</span>
                     </div>
-                    <input
-                      type="number"
-                      value={captchaInput}
-                      onChange={(e) => {
-                        setCaptchaInput(e.target.value);
-                        if (errors.captcha) {
-                          setErrors({ ...errors, captcha: undefined });
+                  </label>
+                  <div className="flex flex-col space-y-3">
+                    <div className="flex justify-center sm:justify-start">
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey={
+                          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
                         }
-                      }}
-                      className={`w-full sm:w-24 px-3 py-2.5 sm:py-3 border rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-center text-sm sm:text-base ${
-                        errors.captcha
-                          ? "border-red-500 bg-red-50 dark:bg-red-900/20"
-                          : "border-gray-300 hover:border-gray-400"
-                      }`}
-                      placeholder={t("contact.form.placeholder.captcha")}
-                    />
+                        onChange={handleCaptchaChange}
+                        onExpired={handleCaptchaExpired}
+                        theme="light"
+                        size="normal"
+                        className="transform scale-75 sm:scale-100 origin-center sm:origin-left"
+                      />
+                    </div>
+                    {errors.captcha && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-500 text-sm flex items-center"
+                      >
+                        <HiExclamationCircle className="w-4 h-4 mr-1" />
+                        {errors.captcha}
+                      </motion.p>
+                    )}
                   </div>
-                  {errors.captcha && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-red-500 text-sm mt-1 flex items-center"
-                    >
-                      <HiExclamationCircle className="w-4 h-4 mr-1" />
-                      {errors.captcha}
-                    </motion.p>
-                  )}
                 </div>
 
                 {/* Submit Button - mobile optimized */}

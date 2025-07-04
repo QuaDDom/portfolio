@@ -10,42 +10,44 @@ import {
   HiHeart,
   HiArrowUp,
 } from "react-icons/hi";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer: React.FC = () => {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   const footerSections = [
     {
-      title: "Navegación",
+      title: t("footer.nav.title"),
       links: [
-        { name: "Inicio", href: "#hero" },
-        { name: "Sobre Mí", href: "#about" },
-        { name: "Habilidades", href: "#skills" },
-        { name: "Proyectos", href: "#projects" },
-        { name: "Servicios", href: "#services" },
-        { name: "Contacto", href: "#contact" },
+        { name: t("nav.home"), href: "#hero" },
+        { name: t("nav.about"), href: "#about" },
+        { name: t("nav.skills"), href: "#skills" },
+        { name: t("nav.projects"), href: "#projects" },
+        { name: t("nav.services"), href: "#services" },
+        { name: t("nav.contact"), href: "#contact" },
       ],
     },
     {
-      title: "Servicios",
+      title: t("footer.services.title"),
       links: [
-        { name: "Desarrollo Web", href: "#services" },
-        { name: "Aplicaciones Móviles", href: "#services" },
-        { name: "E-commerce", href: "#services" },
-        { name: "APIs Personalizadas", href: "#services" },
-        { name: "Consultoría Tech", href: "#services" },
-        { name: "Mantenimiento", href: "#services" },
+        { name: t("footer.services.web"), href: "#services" },
+        { name: t("footer.services.mobile"), href: "#services" },
+        { name: t("footer.services.ecommerce"), href: "#services" },
+        { name: t("footer.services.api"), href: "#services" },
+        { name: t("footer.services.consulting"), href: "#services" },
+        { name: t("footer.services.maintenance"), href: "#services" },
       ],
     },
     {
-      title: "Tecnologías",
+      title: t("footer.tech.title"),
       links: [
-        { name: "React & Next.js", href: "#skills" },
-        { name: "Node.js & Express", href: "#skills" },
-        { name: "TypeScript", href: "#skills" },
-        { name: "MongoDB & MySQL", href: "#skills" },
-        { name: "Flutter", href: "#skills" },
-        { name: "Ver todas", href: "#skills" },
+        { name: t("footer.tech.react"), href: "#skills" },
+        { name: t("footer.tech.node"), href: "#skills" },
+        { name: t("footer.tech.typescript"), href: "#skills" },
+        { name: t("footer.tech.databases"), href: "#skills" },
+        { name: t("footer.tech.flutter"), href: "#skills" },
+        { name: t("footer.tech.all"), href: "#skills" },
       ],
     },
   ];
@@ -165,9 +167,7 @@ const Footer: React.FC = () => {
                   Mateo Quadrelli
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg leading-relaxed max-w-md">
-                  Desarrollador Full Stack especializado en crear experiencias
-                  digitales excepcionales que transforman ideas en realidades
-                  tecnológicas impactantes.
+                  {t("footer.description")}
                 </p>
               </div>
 
@@ -263,11 +263,10 @@ const Footer: React.FC = () => {
             <div className="flex flex-col lg:flex-row items-center justify-between space-y-4 sm:space-y-6 lg:space-y-0">
               <div className="text-center lg:text-left">
                 <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  ¿Listo para tu próximo proyecto?
+                  {t("footer.cta.title")}
                 </h4>
                 <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                  Conversemos sobre cómo puedo ayudarte a alcanzar tus objetivos
-                  digitales.
+                  {t("footer.cta.description")}
                 </p>
               </div>
               <motion.button
@@ -276,7 +275,7 @@ const Footer: React.FC = () => {
                 onClick={() => scrollToSection("#contact")}
                 className="px-6 sm:px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
               >
-                Comencemos a Trabajar
+                {t("footer.cta.button")}
               </motion.button>
             </div>
           </div>
@@ -290,24 +289,26 @@ const Footer: React.FC = () => {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
-                className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm flex items-center text-center md:text-left"
+                className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm text-center md:text-left"
               >
-                © {currentYear} Mateo Quadrelli. Diseñado y desarrollado con
-                <motion.span
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    color: ["#ef4444", "#f97316", "#ef4444"],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="mx-1"
-                >
-                  <HiHeart className="w-3 h-3 sm:w-4 sm:h-4" />
-                </motion.span>
-                en Córdoba, Argentina.
+                <span className="flex items-center justify-center md:justify-start flex-wrap">
+                  © {currentYear} Mateo Quadrelli. {t("footer.copyright")}
+                  <motion.span
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      color: ["#ef4444", "#f97316", "#ef4444"],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="inline-flex items-center mx-1"
+                  >
+                    <HiHeart className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </motion.span>
+                  {t("footer.location")}
+                </span>
               </motion.p>
 
               <div className="flex items-center space-x-4 sm:space-x-6">
@@ -323,11 +324,11 @@ const Footer: React.FC = () => {
 
                 <div className="hidden sm:flex space-x-3 sm:space-x-4 text-xs text-gray-500 dark:text-gray-500">
                   <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
-                    Política de Privacidad
+                    {t("footer.privacy")}
                   </button>
                   <span>•</span>
                   <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
-                    Términos de Servicio
+                    {t("footer.terms")}
                   </button>
                 </div>
               </div>
@@ -336,11 +337,11 @@ const Footer: React.FC = () => {
             {/* Mobile-only legal links */}
             <div className="flex sm:hidden justify-center space-x-4 mt-3 text-xs text-gray-500 dark:text-gray-500">
               <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
-                Política de Privacidad
+                {t("footer.privacy")}
               </button>
               <span>•</span>
               <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
-                Términos de Servicio
+                {t("footer.terms")}
               </button>
             </div>
           </div>
