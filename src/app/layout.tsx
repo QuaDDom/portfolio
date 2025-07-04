@@ -158,23 +158,6 @@ export default function RootLayout({
         <meta name="dc.created" content="2025-01-01" />
         <meta name="dc.modified" content={currentDate} />
 
-        {/* Preload critical resources */}
-        <link
-          rel="preload"
-          href="/fonts/inter-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/fira-code-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link rel="preload" href="/og-image-2025.webp" as="image" />
-
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -278,9 +261,6 @@ export default function RootLayout({
         <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
         <meta name="msapplication-TileColor" content="#3b82f6" />
         <meta name="theme-color" content="#3b82f6" />
-
-        {/* PWA Manifest */}
-        <link rel="manifest" href="/manifest.json" />
 
         {/* Safari Pinned Tab */}
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#3b82f6" />
